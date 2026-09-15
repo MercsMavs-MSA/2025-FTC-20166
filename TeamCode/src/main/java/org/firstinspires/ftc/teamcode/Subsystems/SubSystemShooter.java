@@ -27,7 +27,7 @@ public class SubSystemShooter {
     private double turretOffset = 0;
     private DcMotorEx shooterFlyWheel;
     private DcMotorEx intakeMotor;
-    private CRServo turretRotation;
+    private DcMotorEx turretRotation;
     private CRServo transferServo1;
 //    private RobotConstants.alliance alliance;
 //    private Pose goalPose;
@@ -61,7 +61,7 @@ public class SubSystemShooter {
         transferServo1 = hardwareMap.get(CRServo.class, "transfer1");
         transferServo2 = hardwareMap.get(CRServo.class, "transfer2");
 
-        turretRotation = hardwareMap.get(CRServo.class, "turretRotation");
+        turretRotation = hardwareMap.get(DcMotorEx.class, "turretRotation");
 
         shooterFlyWheel = hardwareMap.get(DcMotorEx.class, "shooterFlyWheel");
         pidStore = shooterFlyWheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -103,7 +103,7 @@ public class SubSystemShooter {
 //                    {2.465, 1.984, 1.615, 1.34, 1.141, 0.915, 0.721, 0.536, 0.308}, //ROBOT 0
 
                     { -180,  -135,   -90,   -45,     0,    45,    90,   135,   180},
-                    {2.553, 2.032, 1.671, 1.379, 1.135, 0.931, 0.743, 0.556, 0.347},
+                    {2.478, 2.021, 1.628, 1.34, 1.103, 0.913, 0.715, 0.536, 0.322},
                     //Measured voltage. MUST be ordered high to low. Need to update these to 'real life'
             };//Should move to robot constants since may be different for each robot
 

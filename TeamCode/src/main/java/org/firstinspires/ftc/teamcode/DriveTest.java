@@ -15,7 +15,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 //https://hermes.zharel.gay/
 
-@Disabled
 @TeleOp
 //@Disabled
 public class DriveTest extends LinearOpMode {
@@ -81,6 +80,10 @@ public class DriveTest extends LinearOpMode {
         {
             m1.setDirection(DcMotorSimple.Direction.REVERSE);
             m3.setDirection(DcMotorSimple.Direction.REVERSE);
+        } else
+        {
+            m1.setDirection(DcMotorSimple.Direction.REVERSE);
+            m3.setDirection(DcMotorSimple.Direction.REVERSE);
         }
     }
 
@@ -95,8 +98,8 @@ public class DriveTest extends LinearOpMode {
         }
         else
         {
-            logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
-            usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+            logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
+            usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
        }
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu = hardwareMap.get(IMU.class, "imu");
