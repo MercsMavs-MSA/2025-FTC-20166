@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.Utilities.GeneralUtils;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 import java.util.function.Supplier;
 //config name                hub                slot                    description

@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,14 +9,18 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import com.pedropathing.math.Pose;
+import com.pedropathing.follower.Follower;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 //https://hermes.zharel.gay/
 
 @TeleOp
 //@Disabled
-public class DriveTest extends LinearOpMode {
+public class DriveTestPedro extends LinearOpMode {
 
     private double driveX;
     private double driveY;
@@ -56,7 +58,8 @@ public class DriveTest extends LinearOpMode {
     private double BLPower = 0.0;
     private double BRPower = 0.0;
     private double currentHeading = 0.0;
-    private Pose robotPose = new Pose(0,0,0);
+    private Pose robotPose = new Pose(8, 8, 0);
+    private Follower follower = Constants.create(hardwareMap);
 
     private void initializeMotors()
     {
@@ -80,38 +83,43 @@ public class DriveTest extends LinearOpMode {
 
         if (robotID == 1)
         {
-            m3.setDirection(DcMotorSimple.Direction.REVERSE);
+            m1.setDirection(DcMotorSimple.Direction.REVERSE);
             m2.setDirection(DcMotorSimple.Direction.REVERSE);
         } else
         {
-            m3.setDirection(DcMotorSimple.Direction.REVERSE);
+            m1.setDirection(DcMotorSimple.Direction.REVERSE);
             m2.setDirection(DcMotorSimple.Direction.REVERSE);
         }
     }
 
-    private void initializeIMU()
-    {
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection;
+//    private void initializeIMU()
+//    {
+//        RevHubOrientationOnRobot.LogoFacingDirection logoDirection;
+//        RevHubOrientationOnRobot.UsbFacingDirection usbDirection;
+//
+//        if (robotID == 1) {
+//            logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+//            usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+//        }
+//        else
+//        {
+//            logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
+//            usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+//       }
+//        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+//        imu = hardwareMap.get(IMU.class, "imu");
+//        imu.initialize(new IMU.Parameters(orientationOnRobot));
+//        imu.resetYaw();
+//    }
 
-        if (robotID == 1) {
-            logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-            usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
-        }
-        else
-        {
-            logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
-            usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
-       }
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-        imu.resetYaw();
+    private void updatePose() {
+        follower.update();
+        robotPose = follower.pose();
     }
     public void initializeHardware() {
 
         initializeMotors();
-        initializeIMU();
+//        initializeIMU();
     }
 
     private void setDriveMotors(double FL, double FR, double BL, double BR)
@@ -135,14 +143,13 @@ public class DriveTest extends LinearOpMode {
         double angleInRadians;
         double oldDriveX = gamepad1.left_stick_x;
         double oldDriveY = gamepad1.left_stick_y;
-        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         if(gamepad1.right_bumper)
         {
             angleInRadians = 0;
         }
         else
         {
-            angleInRadians = orientation.getYaw(AngleUnit.RADIANS);
+            angleInRadians = robotPose.heading();
         }
 
         driveX = oldDriveX * Math.cos(angleInRadians) - oldDriveY * Math.sin(angleInRadians);

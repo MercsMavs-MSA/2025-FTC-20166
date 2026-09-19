@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -181,9 +181,9 @@ public class SubSystemShooter {
     private void updateTurretHeading(Pose robotPos)
     {
         double currentTurretAngle;
-        double goalHeading = GeneralUtils.getPointsHeading(goalPose.getX(), goalPose.getY(), robotPos.getX(), robotPos.getY()) - 180;
+        double goalHeading = GeneralUtils.getPointsHeading(goalPose.x(), goalPose.y(), robotPos.x(), robotPos.y()) - 180;
 
-        turretDelta = GeneralUtils.wrapRange((goalHeading - Math.toDegrees(robotPos.getHeading())) + turretOffset, 180);
+        turretDelta = GeneralUtils.wrapRange((goalHeading - Math.toDegrees(robotPos.heading())) + turretOffset, 180);
 
         //this is for turret rotation.
         currentTurretAngle = getTurretAngle();

@@ -7,8 +7,9 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 //import com.bylazar.ftcontrol.panels.json.Rectangle;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
+import com.pedropathing.follower.ManualDrive;
+import com.pedropathing.math.Pose;
+import com.pedropathing.api.PoseFactory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -25,7 +26,7 @@ import org.firstinspires.ftc.teamcode.Utilities.GeneralUtils;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 import java.util.function.Supplier;
 //config name                hub                slot                    description
@@ -92,7 +93,6 @@ public class PedroTeleOp extends OpMode {
     private int joystickMultiplier;
     private Pose goalPose;
     private Pose boxProxy;
-    private Supplier<PathChain> pathChain;
     private boolean slowMode = false;
     private double slowModeMultiplier = 0.5;
     private String startPosVerbose;
@@ -164,7 +164,7 @@ public class PedroTeleOp extends OpMode {
         startingPose = (Pose) blackboard.get("Position");
         alliance = (RobotConstants.alliance) blackboard.get("Alliance");
         centricity = blackboard.get("Centricity");
-        follower = Constants.createFollower(hardwareMap, robotConstants);
+        follower = Constants.create(hardwareMap);
         if (startingPose != null)
         {
             blackboard.remove("Position");
@@ -269,15 +269,15 @@ public class PedroTeleOp extends OpMode {
         TelemetryPacket fieldPayload = new TelemetryPacket(true);
 
         fieldPayload.fieldOverlay()
-                .setTranslation(-robotPose.getX(), -robotPose.getY())
-                .setRotation(robotPose.getHeading())
+                .setTranslation(-robotPose.x(), -robotPose.y())
+                .setRotation(robotPose.heading())
                 .strokeRect(-5,-5,10,10)
                 .strokeLine(0,0,-5,0)
                 .setStroke("red")
-                .setRotation(Math.toRadians(Math.toDegrees(robotPose.getHeading()) + subSystemShooter.getTurretAngle()))
+                .setRotation(Math.toRadians(Math.toDegrees(robotPose.heading()) + subSystemShooter.getTurretAngle()))
                 .strokeLine(0,0,-10,0)
                 .setStroke("blue")
-                .setRotation(Math.toRadians(subSystemShooter.getTurretDelta() + Math.toDegrees(robotPose.getHeading())))
+                .setRotation(Math.toRadians(subSystemShooter.getTurretDelta() + Math.toDegrees(robotPose.heading())))
                 .strokeLine(0,0,-15,0);
 
         FtcDashboard.getInstance().sendTelemetryPacket(fieldPayload);
@@ -318,54 +318,62 @@ public class PedroTeleOp extends OpMode {
 
             if (!slowMode)
             {
-                follower.setTeleOpDrive(forward, strafe, turn, robotCentric);
+                if (robotCentric) {
+                    follower.manual(forward * slowModeMultiplier, strafe * slowModeMultiplier, turn * slowModeMultiplier);
+                } else {
+                    ManualDrive.fieldCentric(forward, strafe, turn, robotPose.heading());
+                }
             }
             else
             {
-                follower.setTeleOpDrive(forward * slowModeMultiplier, strafe * slowModeMultiplier, turn * slowModeMultiplier, robotCentric);
+                if (robotCentric) {
+                    follower.manual(forward * slowModeMultiplier, strafe * slowModeMultiplier, turn * slowModeMultiplier);
+                } else {
+                    ManualDrive.fieldCentric(forward, strafe, turn, robotPose.heading());
+                }
             }
         }
     }
     public void updatePose()
     {
         follower.update();
-        robotPose = follower.getPose();
+        robotPose = follower.pose();
         goalPose = waypoints.goalPoint;
-        DTG = GeneralUtils.getPointsDistance(goalPose.getX(),goalPose.getY(),robotPose.getX(),robotPose.getY());
+        DTG = GeneralUtils.getPointsDistance(goalPose.x(),goalPose.y(),robotPose.x(),robotPose.y());
     }
 
     public void updateAutomatedDrive()
     {
         //Automated PathFollowing
         if (gamepad1.aWasPressed()) {
-            follower.holdPoint(boxProxy);
+            follower.hold(boxProxy);
             automatedDrive = true;
         }
 
         if (automatedDrive && gamepad1.dpadLeftWasPressed())
         {
-            boxProxy = new Pose(boxProxy.getX() - .5, boxProxy.getY(), boxProxy.getHeading());
-            follower.holdPoint(boxProxy);
+            boxProxy = new Pose(boxProxy.x() - .5, boxProxy.y(), boxProxy.heading());
+            follower.hold(boxProxy);
         }
         else if (automatedDrive && gamepad1.dpadRightWasPressed())
         {
-            boxProxy = new Pose(boxProxy.getX() + .5, boxProxy.getY(), boxProxy.getHeading());
-            follower.holdPoint(boxProxy);
+            boxProxy = new Pose(boxProxy.x() + .5, boxProxy.y(), boxProxy.heading());
+            follower.hold(boxProxy);
         }
         else if (automatedDrive && gamepad1.dpadUpWasPressed())
         {
-            boxProxy = new Pose(boxProxy.getX(), boxProxy.getY() + .5, boxProxy.getHeading());
-            follower.holdPoint(boxProxy);
+            boxProxy = new Pose(boxProxy.x(), boxProxy.y() + .5, boxProxy.heading());
+            follower.hold(boxProxy);
         }
         else if (automatedDrive && gamepad1.dpadDownWasPressed())
         {
-            boxProxy = new Pose(boxProxy.getX(), boxProxy.getY() - .5, boxProxy.getHeading());
-            follower.holdPoint(boxProxy);
+            boxProxy = new Pose(boxProxy.x(), boxProxy.y() - .5, boxProxy.heading());
+            follower.hold(boxProxy);
         }
 
         //Stop automated following if the follower is done
         if (automatedDrive && gamepad1.bWasPressed()) {
-            follower.startTeleopDrive();
+//            follower.startTeleopDrive();
             automatedDrive = false;
         }
     }
@@ -432,9 +440,9 @@ public class PedroTeleOp extends OpMode {
     public void updateTelemetryA()
     {
         telemetryA.addData("Alliance", allianceVerbose);
-        telemetryA.addData("position X", robotPose.getX());
-        telemetryA.addData("position Y", robotPose.getY());
-        telemetryA.addData("position theta", Math.toDegrees(robotPose.getHeading()));
+        telemetryA.addData("position X", robotPose.x());
+        telemetryA.addData("position Y", robotPose.y());
+        telemetryA.addData("position theta", Math.toDegrees(robotPose.heading()));
         telemetryA.addData("automatedDrive", automatedDrive);
         telemetryA.addLine();
         telemetryA.addData("Goal Pose", goalPose);
@@ -472,7 +480,7 @@ public class PedroTeleOp extends OpMode {
     @Override
     public void init()
     {
-        robotPose = new Pose();
+        robotPose = new Pose(0,0,0);
         initializeHardware();
         initializeLEDs();
 
@@ -526,7 +534,7 @@ public class PedroTeleOp extends OpMode {
         subSystemShooter.setGoalPose(goalPose);
         subSystemShooter.setAgitator(robotConstants.agitator);
         follower.update();
-        follower.startTeleopDrive();
+//        follower.startTeleopDrive();
         timer.reset();
     }
     @Override

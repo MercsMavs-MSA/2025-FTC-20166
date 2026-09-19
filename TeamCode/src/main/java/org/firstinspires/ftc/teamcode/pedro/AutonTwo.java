@@ -1,13 +1,10 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.pedro;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
-import com.pedropathing.paths.PathChain;
-import com.pedropathing.util.Timer;
+import com.pedropathing.math.Pose;
+import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -116,7 +113,7 @@ public class AutonTwo extends OpMode {
 
     private void processStateStart()
     {
-        follower.holdPoint(waypoints.autoShootFromPose);
+        follower.hold(waypoints.autoShootFromPose);
         currentAutonomousState = state.WAIT_PATH_DONE;
         waitPathDoneNextState = state.SHOOT_BALL_STATE;
 
@@ -144,7 +141,7 @@ public class AutonTwo extends OpMode {
         }
         else
         {
-            follower.holdPoint(waypoints.autoEndParkPose);
+            follower.hold(waypoints.autoEndParkPose);
 
             currentAutonomousState = state.DO_NOTHING;
         }
@@ -180,10 +177,10 @@ public class AutonTwo extends OpMode {
         waypoints = new Waypoints(alliance, location);
         startingPose = waypoints.startingPose;
 
-        follower = Constants.createFollower(hardwareMap, robotConstants);
+        follower = Constants.create(hardwareMap);
 
         opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
+        opmodeTimer.reset();
 
         currentAutonomousState = state.START;
 
@@ -277,9 +274,9 @@ public class AutonTwo extends OpMode {
     public void updatePose()
     {
         follower.update();
-        robotPose = follower.getPose();
+        robotPose = follower.pose();
         goalPose = waypoints.goalPoint;
-        DTG = GeneralUtils.getPointsDistance(goalPose.getX(),goalPose.getY(),robotPose.getX(),robotPose.getY());
+        DTG = GeneralUtils.getPointsDistance(goalPose.x(),goalPose.y(),robotPose.x(),robotPose.y());
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
@@ -295,7 +292,7 @@ public class AutonTwo extends OpMode {
     public void start()
     {
         subSystemShooter.setGoalPose(goalPose);
-        opmodeTimer.resetTimer();
+        opmodeTimer.reset();
         subSystemShooter.setAgitator(robotConstants.agitator);
         subSystemShooter.setTransfer(true);
     }
@@ -325,15 +322,15 @@ public class AutonTwo extends OpMode {
 //            blackboard.put("Alliance",RobotConstants.alliance.BLUE);
 //        }
         blackboard.put("Alliance",alliance);
-        blackboard.put("Position",follower.getPose());
+        blackboard.put("Position",follower.pose());
         blackboard.put("Centricity", defaultFieldCentric);
     }
 
     private void updateTelemetry()
     {
-        telemetry.addData("Starting Pose x", startingPose.getX());
-        telemetry.addData("Starting Pose y", startingPose.getY());
-        telemetry.addData("Starting Pose Heading", Math.toDegrees(startingPose.getHeading()));
+        telemetry.addData("Starting Pose x", startingPose.x());
+        telemetry.addData("Starting Pose y", startingPose.y());
+        telemetry.addData("Starting Pose Heading", Math.toDegrees(startingPose.heading()));
         telemetry.addLine();
 
         telemetryA.addData("turretTargetAngle", subSystemShooter.getTurretDelta());
@@ -341,14 +338,14 @@ public class AutonTwo extends OpMode {
 
         telemetry.addData("Goal point", waypoints.goalPoint);
         telemetry.addLine();
-        telemetry.addData("Goal Pose x", waypoints.goalPoint.getX());
-        telemetry.addData("Goal Pose y", waypoints.goalPoint.getY());
-        telemetry.addData("Goal Pose Heading", Math.toDegrees(waypoints.goalPoint.getHeading()));
+        telemetry.addData("Goal Pose x", waypoints.goalPoint.x());
+        telemetry.addData("Goal Pose y", waypoints.goalPoint.y());
+        telemetry.addData("Goal Pose Heading", Math.toDegrees(waypoints.goalPoint.heading()));
         telemetry.addLine();
         telemetry.addData("path state", currentAutonomousState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("x", follower.pose().x());
+        telemetry.addData("y", follower.pose().x());
+        telemetry.addData("heading", Math.toDegrees(follower.pose().x()));
         telemetry.addData("Follower busy?", follower.isBusy());
         telemetry.addData("Alliance", alliance);
         telemetry.addLine();
