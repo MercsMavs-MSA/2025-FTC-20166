@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.bylazar.panels.Panels;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -21,7 +24,7 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 @TeleOp
 //@Disabled
 public class DriveTestPedro extends LinearOpMode {
-
+//    private TelemetryManager panelsTelemetry = new TelemetryManager();
     private double driveX;
     private double driveY;
     private double driveRotate;
@@ -59,7 +62,7 @@ public class DriveTestPedro extends LinearOpMode {
     private double BRPower = 0.0;
     private double currentHeading = 0.0;
     private Pose robotPose = new Pose(8, 8, 0);
-    private Follower follower = Constants.create(hardwareMap);
+    private Follower follower = null;
 
     private void initializeMotors()
     {
@@ -83,11 +86,11 @@ public class DriveTestPedro extends LinearOpMode {
 
         if (robotID == 1)
         {
-            m1.setDirection(DcMotorSimple.Direction.REVERSE);
+            m3.setDirection(DcMotorSimple.Direction.REVERSE);
             m2.setDirection(DcMotorSimple.Direction.REVERSE);
         } else
         {
-            m1.setDirection(DcMotorSimple.Direction.REVERSE);
+            m3.setDirection(DcMotorSimple.Direction.REVERSE);
             m2.setDirection(DcMotorSimple.Direction.REVERSE);
         }
     }
@@ -117,9 +120,10 @@ public class DriveTestPedro extends LinearOpMode {
         robotPose = follower.pose();
     }
     public void initializeHardware() {
-
         initializeMotors();
 //        initializeIMU();
+        follower = Constants.create(hardwareMap);
+        follower.setPose(robotPose);
     }
 
     private void setDriveMotors(double FL, double FR, double BL, double BR)
@@ -186,10 +190,16 @@ public class DriveTestPedro extends LinearOpMode {
         waitForStart();
         while (opModeIsActive())
         {
+            updatePose();
+
             updateDriveControls();
             calculateDrivePower();
 
             setDriveMotors(FLPower, FRPower, BLPower, BRPower);
+
+//            panelsTelemetry.addData("x", robotPose.x());
+//            panelsTelemetry.addData("y", robotPose.y());
+//            panelsTelemetry.addData("heading", robotPose.heading());
 
             telemetry.addData("Robot ID",robotID);
             telemetry.addData("Current Heading ", currentHeading);
