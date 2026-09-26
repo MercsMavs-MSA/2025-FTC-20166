@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.bylazar.field.Canvas;
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
+import com.pedropathing.follower.ManualDrive;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,6 +19,8 @@ import com.pedropathing.follower.Follower;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemShooter;
+import org.firstinspires.ftc.teamcode.Utilities.DrawRobot;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 //https://hermes.zharel.gay/
@@ -24,7 +28,9 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 @TeleOp
 //@Disabled
 public class DriveTestPedro extends LinearOpMode {
-//    private TelemetryManager panelsTelemetry = new TelemetryManager();
+    private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+    private DrawRobot drawUtil = new DrawRobot();
+    private SubSystemShooter subShooter;
     private double driveX;
     private double driveY;
     private double driveRotate;
@@ -120,6 +126,7 @@ public class DriveTestPedro extends LinearOpMode {
         robotPose = follower.pose();
     }
     public void initializeHardware() {
+        subShooter = new SubSystemShooter(hardwareMap);
         initializeMotors();
 //        initializeIMU();
         follower = Constants.create(hardwareMap);
@@ -185,22 +192,55 @@ public class DriveTestPedro extends LinearOpMode {
         BRPower = (BRXPower + BRYPower + BRRPower);
     }
     public void runOpMode() throws InterruptedException {
-       initializeHardware();
+        initializeHardware();
 
         waitForStart();
         while (opModeIsActive())
         {
+//            updateDriveControls();
+//            calculateDrivePower();
+//
+//            setDriveMotors(FLPower, FRPower, BLPower, BRPower);
+
+            if (gamepad1.right_bumper) {
+                follower.manual(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+            } else {
+                follower.manual(
+                        ManualDrive.fieldCentric(
+                                -gamepad1.left_stick_y,
+                                -gamepad1.left_stick_x,
+                                -gamepad1.right_stick_x,
+                                robotPose.heading()
+                        )
+                );
+            }
+
+            if (gamepad1.left_bumper) {
+                follower.hold(new Pose(70.75, 70.75, Math.toRadians(90)));
+            }
+
+            if (gamepad1.right_trigger_pressed) {
+                subShooter.setVelocity(1365);
+            } else {
+                subShooter.setVelocity(0);
+            }
+
             updatePose();
-
-            updateDriveControls();
-            calculateDrivePower();
-
-            setDriveMotors(FLPower, FRPower, BLPower, BRPower);
 
 //            panelsTelemetry.addData("x", robotPose.x());
 //            panelsTelemetry.addData("y", robotPose.y());
-//            panelsTelemetry.addData("heading", robotPose.heading());
+//            panelsTelemetry.addData("heading", Math.toDegrees(robotPose.heading()));
 
+            drawUtil.drawRobot(robotPose.x(), robotPose.y(), robotPose.heading());
+
+            panelsTelemetry.update();
+
+            telemetry.addData("x", robotPose.x());
+            telemetry.addData("y", robotPose.y());
+            telemetry.addData("heading", Math.toDegrees(robotPose.heading()));
+            telemetry.addLine();
+            telemetry.addData("flywheel Velocity", subShooter.getVelocity());
+            telemetry.addLine();
             telemetry.addData("Robot ID",robotID);
             telemetry.addData("Current Heading ", currentHeading);
             telemetry.addData("Drive X", driveX);

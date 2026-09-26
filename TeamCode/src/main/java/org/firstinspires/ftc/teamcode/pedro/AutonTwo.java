@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 import org.firstinspires.ftc.teamcode.Utilities.GeneralUtils;
 import org.firstinspires.ftc.teamcode.Waypoints;
-import org.firstinspires.ftc.teamcode.Subsystems.SubSystemShooter;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemShooterOld;
 
 
 @Autonomous
@@ -23,7 +23,7 @@ public class AutonTwo extends OpMode {
     private Follower follower;
     private Timer actionTimer, opmodeTimer;
     private Pose startingPose;
-    private SubSystemShooter subSystemShooter;
+    private SubSystemShooterOld subSystemShooterOld;
 
     private SubSystemRobotID subSystemRobotID;
     private RobotConstants robotConstants;
@@ -120,8 +120,8 @@ public class AutonTwo extends OpMode {
     }
     private void processBallLiftUp()
     {
-        subSystemShooter.setLiftArm(true);
-        subSystemShooter.setIntakeSpeed(1200);
+        subSystemShooterOld.setLiftArm(true);
+        subSystemShooterOld.setIntakeSpeed(1200);
         restartTimeout(1000);
 
         currentAutonomousState = state.WAIT_TIMER_DONE_STATE;
@@ -130,8 +130,8 @@ public class AutonTwo extends OpMode {
     }
     private void processBallLiftDown()
     {
-        subSystemShooter.setLiftArm(false);
-        subSystemShooter.setIntakeSpeed(0);
+        subSystemShooterOld.setLiftArm(false);
+        subSystemShooterOld.setIntakeSpeed(0);
         ballCount--;
         if (ballCount > 0)
         {
@@ -170,7 +170,7 @@ public class AutonTwo extends OpMode {
         try {
             subSystemRobotID = new SubSystemRobotID(hardwareMap);
             robotConstants = new RobotConstants(subSystemRobotID.getRobotID());
-            subSystemShooter = new SubSystemShooter(hardwareMap, robotConstants);
+            subSystemShooterOld = new SubSystemShooterOld(hardwareMap, robotConstants);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -291,10 +291,10 @@ public class AutonTwo extends OpMode {
     @Override
     public void start()
     {
-        subSystemShooter.setGoalPose(goalPose);
+        subSystemShooterOld.setGoalPose(goalPose);
         opmodeTimer.reset();
-        subSystemShooter.setAgitator(robotConstants.agitator);
-        subSystemShooter.setTransfer(true);
+        subSystemShooterOld.setAgitator(robotConstants.agitator);
+        subSystemShooterOld.setTransfer(true);
     }
 
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
@@ -305,7 +305,7 @@ public class AutonTwo extends OpMode {
         updatePose();
         //follower.update();
         autonomousPathUpdate();
-        subSystemShooter.updateTurret(robotPose, DTG);
+        subSystemShooterOld.updateTurret(robotPose, DTG);
 
         updateTelemetry();
     }
@@ -333,8 +333,8 @@ public class AutonTwo extends OpMode {
         telemetry.addData("Starting Pose Heading", Math.toDegrees(startingPose.heading()));
         telemetry.addLine();
 
-        telemetryA.addData("turretTargetAngle", subSystemShooter.getTurretDelta());
-        telemetryA.addData("turretAngle", subSystemShooter.getTurretAngle());
+        telemetryA.addData("turretTargetAngle", subSystemShooterOld.getTurretDelta());
+        telemetryA.addData("turretAngle", subSystemShooterOld.getTurretAngle());
 
         telemetry.addData("Goal point", waypoints.goalPoint);
         telemetry.addLine();
@@ -351,8 +351,8 @@ public class AutonTwo extends OpMode {
         telemetry.addLine();
         telemetry.addData("PodXOffset", robotConstants.podX);
         telemetry.addData("PodYOffset", robotConstants.podY);
-        telemetryA.addData("Turret Target Velocity", subSystemShooter.getShooterTargetVelocity());
-        telemetryA.addData("Turret Actual Velocity", subSystemShooter.getShooterVelocity());
+        telemetryA.addData("Turret Target Velocity", subSystemShooterOld.getShooterTargetVelocity());
+        telemetryA.addData("Turret Actual Velocity", subSystemShooterOld.getShooterVelocity());
         telemetryA.addData("Upper: ", telemetryUpper);
         telemetryA.addData("Lower: ", telemetryLower);
 

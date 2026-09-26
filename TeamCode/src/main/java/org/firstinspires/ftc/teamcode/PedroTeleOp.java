@@ -9,7 +9,6 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.math.Pose;
-import com.pedropathing.api.PoseFactory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -21,14 +20,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
-import org.firstinspires.ftc.teamcode.Subsystems.SubSystemShooter;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemShooterOld;
 import org.firstinspires.ftc.teamcode.Utilities.GeneralUtils;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
-
-import java.util.function.Supplier;
 //config name                hub                slot                    description
 
 //motors
@@ -76,7 +73,7 @@ public class PedroTeleOp extends OpMode {
     private Follower follower;
     ElapsedTime timer = new ElapsedTime();
 
-    private SubSystemShooter subSystemShooter;
+    private SubSystemShooterOld subSystemShooterOld;
     private double DTG;
     public static double telemetryUpper = 2500;
     public static double telemetryLower = 0;
@@ -113,7 +110,7 @@ public class PedroTeleOp extends OpMode {
         {
             subSystemRobotID = new SubSystemRobotID(hardwareMap);
             robotConstants = new RobotConstants(subSystemRobotID.getRobotID());
-            subSystemShooter = new SubSystemShooter(hardwareMap, robotConstants);
+            subSystemShooterOld = new SubSystemShooterOld(hardwareMap, robotConstants);
         }
         catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -142,7 +139,7 @@ public class PedroTeleOp extends OpMode {
         }
         else
         {
-            if (Math.abs(subSystemShooter.getShooterVelocity() - subSystemShooter.getShooterTargetVelocity()) < 50 && subSystemShooter.getShooterTargetVelocity() != 0)
+            if (Math.abs(subSystemShooterOld.getShooterVelocity() - subSystemShooterOld.getShooterTargetVelocity()) < 50 && subSystemShooterOld.getShooterTargetVelocity() != 0)
             {
                 test = "Ready to shoot";
                 blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
@@ -274,10 +271,10 @@ public class PedroTeleOp extends OpMode {
                 .strokeRect(-5,-5,10,10)
                 .strokeLine(0,0,-5,0)
                 .setStroke("red")
-                .setRotation(Math.toRadians(Math.toDegrees(robotPose.heading()) + subSystemShooter.getTurretAngle()))
+                .setRotation(Math.toRadians(Math.toDegrees(robotPose.heading()) + subSystemShooterOld.getTurretAngle()))
                 .strokeLine(0,0,-10,0)
                 .setStroke("blue")
-                .setRotation(Math.toRadians(subSystemShooter.getTurretDelta() + Math.toDegrees(robotPose.heading())))
+                .setRotation(Math.toRadians(subSystemShooterOld.getTurretDelta() + Math.toDegrees(robotPose.heading())))
                 .strokeLine(0,0,-15,0);
 
         FtcDashboard.getInstance().sendTelemetryPacket(fieldPayload);
@@ -382,39 +379,39 @@ public class PedroTeleOp extends OpMode {
 
         if (gamepad2.y)
         {
-            subSystemShooter.setLiftArm(true);
-            subSystemShooter.setTransfer(true);
+            subSystemShooterOld.setLiftArm(true);
+            subSystemShooterOld.setTransfer(true);
 
         }
         else
         {
-            subSystemShooter.setLiftArm(false);
-            subSystemShooter.setTransfer(false);
+            subSystemShooterOld.setLiftArm(false);
+            subSystemShooterOld.setTransfer(false);
         }
 
         if (gamepad2.x)
         {
-            subSystemShooter.setIntakeSpeed(1200);
+            subSystemShooterOld.setIntakeSpeed(1200);
         }
         else if (gamepad2.b)
         {
-            subSystemShooter.setIntakeSpeed(-1200);
+            subSystemShooterOld.setIntakeSpeed(-1200);
         }
         else
         {
-            subSystemShooter.setIntakeSpeed(0);
+            subSystemShooterOld.setIntakeSpeed(0);
         }
         if (gamepad2.dpadUpWasPressed())
         {
-            subSystemShooter.resetTurretOffset();
+            subSystemShooterOld.resetTurretOffset();
         }
         else if (gamepad2.dpad_right)
         {
-            subSystemShooter.incrementTurretOffset(-.5);
+            subSystemShooterOld.incrementTurretOffset(-.5);
         }
         else if (gamepad2.dpad_left)
         {
-            subSystemShooter.incrementTurretOffset(.5);
+            subSystemShooterOld.incrementTurretOffset(.5);
         }
     }
     public void updateSlowMode()
@@ -426,8 +423,8 @@ public class PedroTeleOp extends OpMode {
     }
     public void updateFeedback()
     {
-        double targetVel = subSystemShooter.getShooterTargetVelocity();
-        double vel = subSystemShooter.getShooterVelocity();
+        double targetVel = subSystemShooterOld.getShooterTargetVelocity();
+        double vel = subSystemShooterOld.getShooterVelocity();
 
         if (Math.abs(vel - targetVel) <= 25)
         {
@@ -449,14 +446,14 @@ public class PedroTeleOp extends OpMode {
 
         telemetryA.addLine();
         telemetryA.addLine("Turret Data");
-        telemetryA.addData("turretTargetAngle", subSystemShooter.getTurretDelta());
-        telemetryA.addData("turretAngle", subSystemShooter.getTurretAngle());
-        telemetryA.addData("Turret Error", subSystemShooter.getTurretError());
-        telemetryA.addData("Turret Power", subSystemShooter.getTurretRotatePower());
-        telemetryA.addData("Turret Target Velocity", subSystemShooter.getShooterTargetVelocity());
-        telemetryA.addData("Turret Actual Velocity", subSystemShooter.getShooterVelocity());
-        telemetryA.addData("Intake Target Velocity", subSystemShooter.getIntakeTargetVelocity());
-        telemetryA.addData("Intake Actual Velocity", subSystemShooter.getIntakeVelocity());
+        telemetryA.addData("turretTargetAngle", subSystemShooterOld.getTurretDelta());
+        telemetryA.addData("turretAngle", subSystemShooterOld.getTurretAngle());
+        telemetryA.addData("Turret Error", subSystemShooterOld.getTurretError());
+        telemetryA.addData("Turret Power", subSystemShooterOld.getTurretRotatePower());
+        telemetryA.addData("Turret Target Velocity", subSystemShooterOld.getShooterTargetVelocity());
+        telemetryA.addData("Turret Actual Velocity", subSystemShooterOld.getShooterVelocity());
+        telemetryA.addData("Intake Target Velocity", subSystemShooterOld.getIntakeTargetVelocity());
+        telemetryA.addData("Intake Actual Velocity", subSystemShooterOld.getIntakeVelocity());
 
         telemetryA.addLine();
         telemetryA.addData("RobotID", subSystemRobotID.getRobotID());
@@ -468,7 +465,7 @@ public class PedroTeleOp extends OpMode {
         telemetryA.addData("Upper: ", telemetryUpper);
         telemetryA.addData("Lower: ", telemetryLower);
 
-        telemetryA.addData("potVoltage",subSystemShooter.getPotVoltage());
+        telemetryA.addData("potVoltage", subSystemShooterOld.getPotVoltage());
         telemetryA.addData("ready to shoot", updateLEDStatus());
         telemetry.addData("timer", timer);
         drawField();
@@ -525,14 +522,14 @@ public class PedroTeleOp extends OpMode {
         }
         boxProxy = waypoints.endgameParkBoxPose;
         updatePose();
-        subSystemShooter.setGoalPose(goalPose);
+        subSystemShooterOld.setGoalPose(goalPose);
 //        subSystemShooter.setAlliance(alliance);
     }
     @Override
     public void start()
     {
-        subSystemShooter.setGoalPose(goalPose);
-        subSystemShooter.setAgitator(robotConstants.agitator);
+        subSystemShooterOld.setGoalPose(goalPose);
+        subSystemShooterOld.setAgitator(robotConstants.agitator);
         follower.update();
 //        follower.startTeleopDrive();
         timer.reset();
@@ -547,7 +544,7 @@ public class PedroTeleOp extends OpMode {
         updatePedroDrive();
         updateAutomatedDrive();
 
-        subSystemShooter.updateTurret(robotPose, DTG);
+        subSystemShooterOld.updateTurret(robotPose, DTG);
         updateOperatorControls();
 
 //        updateFeedback();
