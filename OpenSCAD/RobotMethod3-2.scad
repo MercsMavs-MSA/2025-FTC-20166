@@ -1,21 +1,21 @@
 DoPrint = false;
 ShowLimits = false;
 LimitBounds = [15, 15, 15];
-ShowShooter = true;
-ShowRampPlate = true;
+ShowShooter = false;
+ShowRampPlate = false;
 ShowBallStore = 2;
-ShowDriveBase = true;
-ShowServos = true;
-ShowServoMounts = true;
-ShowGears = true;
-ShowAlignMarkers = true;
-ShowBallLifter = true;
-ShowTurretMountPlate = true;
-ShowLeftSideAssembly = true;
-ShowRightSideAssembly = true;
-ShowIntake = true;
+ShowDriveBase = false;
+ShowServos = false;
+ShowServoMounts = false;
+ShowGears = false;
+ShowAlignMarkers = false;
+ShowBallLifter = false;
+ShowTurretMountPlate = false;
+ShowLeftSideAssembly = false;
+ShowRightSideAssembly = false;
+ShowIntake = false;
 ShowBellypan = false;
-ShowRevMountPlate = true;
+ShowRevMountPlate = false;
 ShooterAngle = -90;
 TurretAngle  = 0.0;
 ShooterWallT = 0.2;
@@ -2386,6 +2386,40 @@ module ChannelSupport(X = 27, Y = 60)
   }
 }
 
+module TurretMotorGear()
+{
+  scale (25.4)
+  {
+  difference()
+  {
+    rotate(6.6, [0, 0, 1])
+    union()
+    {
+    translate([-4.9985, 0, 0])
+      rotate(180, [1, 0, 0])
+        rotate(90, [1, 0, 0])
+          scale(1/25.4)
+            import("Components/servo gear - Spur gear (36 teeth).stl", 4);
+    cylinder(d = 1, h = .4);
+    }
+    rotate(6.5, [0, 0, 1])
+    {
+    cylinder(d = 8/25.4, h = 1, $fn = 6, center = true);
+    rotate(30, [0, 0, 1])
+    {
+      //Grub screw captive bolt
+      translate([.25, 0, 0.4])
+        cube([1.8/25.4, 6.0/25.4, 1], center = true);
+      //Grub screw opening
+      translate([0, 0, .2])
+        rotate(90, [0, 1, 0])
+          cylinder(d = 3.2 / 25.4, h = 2);
+    }
+    }
+  }
+  }
+}
+
 module Print3D()
 {
 //  BearingBlock(L = 1.4, H = 1, T = 0.3, VO = 0.52, MS = 1.0, MD = 0.118);
@@ -2427,8 +2461,8 @@ if (!DoPrint)
 else
 {
 //  scale(25.4)
-//    DXF();
-  Print3D();
+    DXF();
+//  Print3D();
 }
 //IntakeSpinner();
 
@@ -2448,7 +2482,8 @@ else
 //  cube([.6, .6, 2], center = true);
 //}
 
+//scale (25.4)
+//  TurretMotorGear();
 
-//TurretServoGear();
 
-
+//TurretSensorGear();
