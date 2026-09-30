@@ -7,21 +7,38 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 public class SubSystemShooter {
     private DcMotorEx flywheel;
-    private PIDFCoefficients pidstore;
 
     public SubSystemShooter(HardwareMap hwmap) {
         flywheel = hwmap.get(DcMotorEx.class, "flywheel");
+
+        PIDFCoefficients pidstore;
         pidstore = flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         pidstore.p = 10;
+        pidstore.f = 15;
 
-        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidstore);
+//        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidstore);
     }
 
-    public void setVelocity(double velocity) {
-        flywheel.setVelocity(velocity);
+    public void setVelocityRPM(double velocity) {
+        flywheel.setVelocity(velocity / 60 * 28);
     }
-    public double getVelocity() {
-        return flywheel.getVelocity() / 28;
+
+    public double getVelocityRPM() {
+        return flywheel.getVelocity() / 28 * 60;
+    }
+
+    public void updatePID(double p, double f) {
+        PIDFCoefficients pidstore;
+        pidstore = flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        pidstore.p = 11;
+        pidstore.f = 16;
+
+//        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidstore);
+    }
+
+    public PIDFCoefficients getPID() {
+        return flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
