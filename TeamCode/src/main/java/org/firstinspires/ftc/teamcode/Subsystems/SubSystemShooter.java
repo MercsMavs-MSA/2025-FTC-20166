@@ -14,10 +14,10 @@ public class SubSystemShooter {
         PIDFCoefficients pidstore;
         pidstore = flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        pidstore.p = 10;
-        pidstore.f = 15;
+        pidstore.p = 100;
+        pidstore.f = 12;
 
-//        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidstore);
+        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidstore);
     }
 
     public void setVelocityRPM(double velocity) {
@@ -28,14 +28,16 @@ public class SubSystemShooter {
         return flywheel.getVelocity() / 28 * 60;
     }
 
-    public void updatePID(double p, double f) {
+    public void updatePID(double p, double i, double d, double f) {
         PIDFCoefficients pidstore;
         pidstore = flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        pidstore.p = 11;
-        pidstore.f = 16;
+        pidstore.p = p;
+        pidstore.i = i;
+        pidstore.d = d;
+        pidstore.f = f;
 
-//        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidstore);
+        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidstore);
     }
 
     public PIDFCoefficients getPID() {

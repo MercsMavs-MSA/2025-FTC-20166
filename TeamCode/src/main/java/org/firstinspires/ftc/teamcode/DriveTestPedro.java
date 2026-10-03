@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 @TeleOp
 //@Disabled
 public class DriveTestPedro extends LinearOpMode {
+    private PIDFCoefficients pidstore;
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     private DrawRobot drawUtil = new DrawRobot();
     private SubSystemShooter subShooter;
@@ -65,7 +66,6 @@ public class DriveTestPedro extends LinearOpMode {
     private double currentHeading = 0.0;
     private Pose robotPose = new Pose(8, 8, 0);
     private Follower follower = null;
-    private double targetVelocityFlywheel = 0;
 
     private void initializeMotors()
     {
@@ -216,15 +216,15 @@ public class DriveTestPedro extends LinearOpMode {
                 follower.hold(new Pose(70.75, 70.75, Math.toRadians(90)));
             }
 
-            subShooter.updatePID(PIDConfig.shooterP, PIDConfig.shooterF);
+            subShooter.updatePID(PIDConfig.shooterP, PIDConfig.shooterI, PIDConfig.shooterD, PIDConfig.shooterF);
 
             if (gamepad1.right_trigger_pressed) {
-                subShooter.setVelocityRPM(2500);
-                targetVelocityFlywheel = 2500;
-            } else {
-                subShooter.setVelocityRPM(0);
-                targetVelocityFlywheel = 0;
+                PIDConfig.targetVelocity = 2500;
+            } else if (gamepad1.left_trigger_pressed) {
+                PIDConfig.targetVelocity = 0;
             }
+
+            subShooter.setVelocityRPM(PIDConfig.targetVelocity);
 
             updatePose();
 
@@ -233,19 +233,20 @@ public class DriveTestPedro extends LinearOpMode {
 //            panelsTelemetry.addData("heading", Math.toDegrees(robotPose.heading()));
 
             panelsTelemetry.addData("flywheel velocity (rpm)", subShooter.getVelocityRPM());
+            panelsTelemetry.addData("flywheel target (rpm)", PIDConfig.targetVelocity);
 
-//            drawUtil.drawRobot(robotPose.x(), robotPose.y(), robotPose.heading());
+            drawUtil.drawRobot(robotPose.x(), robotPose.y(), robotPose.heading());
 
             panelsTelemetry.update();
 
-            PIDFCoefficients pidstore = subShooter.getPID();
+            pidstore = subShooter.getPID();
 
             telemetry.addData("x", robotPose.x());
             telemetry.addData("y", robotPose.y());
             telemetry.addData("heading", Math.toDegrees(robotPose.heading()));
             telemetry.addLine();
             telemetry.addData("flywheel Velocity (rpm)", subShooter.getVelocityRPM());
-            telemetry.addData("target flywheel velocity", targetVelocityFlywheel);
+            telemetry.addData("target flywheel velocity", PIDConfig.targetVelocity);
             telemetry.addData("P", pidstore.p);
             telemetry.addData("F", pidstore.f);
             telemetry.addData("Target P", PIDConfig.shooterP);

@@ -18,8 +18,8 @@ public class DrawRobot {
         field.moveCursor(x, y);
         field.circle(4);
         field.line(
-                2 * Math.cos(heading),
-                2 * Math.sin(heading)
+                1 * Math.cos(heading),
+                1 * Math.sin(heading)
         );
 
         field.update();
