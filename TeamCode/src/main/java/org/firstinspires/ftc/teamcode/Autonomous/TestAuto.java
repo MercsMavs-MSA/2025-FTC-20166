@@ -4,6 +4,7 @@ import static com.pedropathing.api.Paths.*;
 
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.commands.Commands;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.ivy.Command;
@@ -14,20 +15,24 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Const;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemShooter;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
-@Autonomous(name = "AutoPath", group = "Autonomous")
+@Autonomous
 public class TestAuto extends LinearOpMode {
 
     private Follower follower;
 
+    private SubSystemShooter subShooter;
+
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(8, 8, 90);
+    private final Pose start = poseFactory.of(8.5, 9.5, 0);
     private final Pose path1 = poseFactory.of(70.4239, 27.9665, 0);
     private final Pose point2 = poseFactory.of(70.4974, 112.4626, 90);
-    private final Pose point3 = poseFactory.of(132.7677, 126.2148, 90);
-    private final Pose point4 = poseFactory.of(133.2781, 133.0955, 90);
+    private final Pose point3 = poseFactory.of(132, 118.9116, 90);
+    private final Pose point4 = poseFactory.of(132, 133, 90);
 
     // Autonomous routine
     public Command autoRoutine() {
@@ -35,12 +40,16 @@ public class TestAuto extends LinearOpMode {
                 follow(follower, path1()),
                 follow(follower, path2()),
                 follow(follower, path3()),
-                follow(follower, path4())
+                follow(follower, path4()),
+                Commands.instant(() -> subShooter.setVelocityRPM(2000)),
+                Commands.waitMs(5000),
+                Commands.instant(() -> subShooter.setVelocityRPM(0))
         );
     }
 
     @Override
     public void runOpMode() {
+        subShooter = new SubSystemShooter(hardwareMap);
         Scheduler.reset();
         follower = Constants.create(hardwareMap);
         follower.setPose(start);
@@ -56,6 +65,8 @@ public class TestAuto extends LinearOpMode {
             telemetry.addData("x", follower.pose().x());
             telemetry.addData("y", follower.pose().y());
             telemetry.addData("heading", follower.pose().heading());
+
+            telemetry.update();
         }
     }
 
@@ -73,6 +84,6 @@ public class TestAuto extends LinearOpMode {
 
     public Path path4() {
         return line(point3, point4).constant(point4)
-                .with(Constants.foresightConfig.maxVelocityConstraint.at(5.0));
+                .with(Constants.foresightConfig.maxVelocityConstraint.at(12.0));
     }
 }

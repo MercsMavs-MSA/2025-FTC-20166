@@ -59,9 +59,9 @@ public class DriveTestPedro extends LinearOpMode {
 
             subShooter.updatePID(PIDConfig.shooterP, PIDConfig.shooterI, PIDConfig.shooterD, PIDConfig.shooterF);
 
-            if (gamepad1.right_trigger_pressed) {
+            if (gamepad1.dpad_right) {
                 PIDConfig.targetVelocity = 2500;
-            } else if (gamepad1.left_trigger_pressed) {
+            } else if (gamepad1.dpad_down) {
                 PIDConfig.targetVelocity = 0;
             }
 

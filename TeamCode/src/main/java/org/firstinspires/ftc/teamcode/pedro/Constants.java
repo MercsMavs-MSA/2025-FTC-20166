@@ -62,6 +62,8 @@ public class Constants {
                 c.maxAchievableStrafeVelocity.set(50.21832429844436);
                 c.naturalForwardDeceleration.set(31.50636715078396);
                 c.naturalStrafeDeceleration.set(52.72089790172871);
+
+                // Pathing Constants
             }
     );
 
