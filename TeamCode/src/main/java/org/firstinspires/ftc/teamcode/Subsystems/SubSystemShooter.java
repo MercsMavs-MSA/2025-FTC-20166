@@ -10,10 +10,19 @@ public class SubSystemShooter {
 
     public SubSystemShooter(HardwareMap hwmap) {
         flywheel = hwmap.get(DcMotorEx.class, "flywheel");
+        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     public void setVelocityRPM(double velocity) {
         flywheel.setVelocity(velocity / 60 * 28);
+    }
+
+    public void setBangBangRPM(double velocity) {
+        if (getVelocityRPM() < velocity) {
+            flywheel.setPower(1);
+        } else {
+            flywheel.setPower(0);
+        }
     }
 
     public void setPower(double power) {flywheel.setPower(power);}

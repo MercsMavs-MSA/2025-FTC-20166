@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.ManualDrive;
+import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.pedropathing.math.Pose;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemShooter;
 import org.firstinspires.ftc.teamcode.Utilities.DrawRobot;
@@ -17,6 +19,8 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 @TeleOp
 //@Disabled
 public class DriveTestPedro extends LinearOpMode {
+    private ElapsedTime flywheelTimer = new ElapsedTime();
+    private double finalTime;
     private PIDFCoefficients pidstore;
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     private DrawRobot drawUtil = new DrawRobot();
@@ -36,6 +40,7 @@ public class DriveTestPedro extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
         initializeHardware();
+        flywheelTimer.reset();
 
         waitForStart();
         while (opModeIsActive())
@@ -60,12 +65,17 @@ public class DriveTestPedro extends LinearOpMode {
             subShooter.updatePID(PIDConfig.shooterP, PIDConfig.shooterI, PIDConfig.shooterD, PIDConfig.shooterF);
 
             if (gamepad1.dpad_right) {
-                PIDConfig.targetVelocity = 2500;
+                PIDConfig.targetVelocity = 2400;
+                flywheelTimer.reset();
             } else if (gamepad1.dpad_down) {
                 PIDConfig.targetVelocity = 0;
             }
 
-            subShooter.setVelocityRPM(PIDConfig.targetVelocity);
+            subShooter.setBangBangRPM(PIDConfig.targetVelocity);
+
+            if (subShooter.getVelocityRPM() <= 2300) {
+                finalTime = flywheelTimer.seconds();
+            }
 
             updatePose();
 
@@ -83,6 +93,7 @@ public class DriveTestPedro extends LinearOpMode {
             telemetry.addData("heading", Math.toDegrees(robotPose.heading()));
             telemetry.addLine();
             telemetry.addData("flywheel Velocity (rpm)", subShooter.getVelocityRPM());
+            telemetry.addData("flywheel timer (seconds)", finalTime);
             telemetry.addData("target flywheel velocity", PIDConfig.targetVelocity);
             telemetry.addData("P", pidstore.p);
             telemetry.addData("F", pidstore.f);
