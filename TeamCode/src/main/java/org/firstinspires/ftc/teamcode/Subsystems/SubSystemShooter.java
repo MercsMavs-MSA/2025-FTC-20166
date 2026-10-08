@@ -7,10 +7,14 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 public class SubSystemShooter {
     private DcMotorEx flywheel;
+    private DcMotorEx intakeMotor;
 
     public SubSystemShooter(HardwareMap hwmap) {
         flywheel = hwmap.get(DcMotorEx.class, "flywheel");
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        intakeMotor = hwmap.get(DcMotorEx.class, "intake");
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void setVelocityRPM(double velocity) {
@@ -45,5 +49,9 @@ public class SubSystemShooter {
 
     public PIDFCoefficients getPID() {
         return flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void intake(boolean enable) {
+        intakeMotor.setPower(enable ? 0.5 : 0);
     }
 }

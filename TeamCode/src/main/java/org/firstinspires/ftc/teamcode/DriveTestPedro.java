@@ -71,6 +71,8 @@ public class DriveTestPedro extends LinearOpMode {
                 PIDConfig.targetVelocity = 0;
             }
 
+            subShooter.intake(gamepad1.dpad_up);
+
             subShooter.setBangBangRPM(PIDConfig.targetVelocity);
 
             if (subShooter.getVelocityRPM() <= 2300) {
