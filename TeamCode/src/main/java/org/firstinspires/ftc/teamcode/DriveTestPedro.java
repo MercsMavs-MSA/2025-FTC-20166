@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.ManualDrive;
-import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -62,18 +61,18 @@ public class DriveTestPedro extends LinearOpMode {
                 follower.hold(new Pose(70.75, 70.75, Math.toRadians(90)));
             }
 
-            subShooter.updatePID(PIDConfig.shooterP, PIDConfig.shooterI, PIDConfig.shooterD, PIDConfig.shooterF);
+            subShooter.updatePID(Configurables.shooterP, Configurables.shooterI, Configurables.shooterD, Configurables.shooterF);
 
             if (gamepad1.dpad_right) {
-                PIDConfig.targetVelocity = 2400;
+                Configurables.targetVelocity = 2400;
                 flywheelTimer.reset();
             } else if (gamepad1.dpad_down) {
-                PIDConfig.targetVelocity = 0;
+                Configurables.targetVelocity = 0;
             }
 
-            subShooter.intake(gamepad1.dpad_up);
+            subShooter.intakePower(gamepad1.dpad_up ? Configurables.intakePower : 0);
 
-            subShooter.setBangBangRPM(PIDConfig.targetVelocity);
+            subShooter.setBangBangRPM(Configurables.targetVelocity);
 
             if (subShooter.getVelocityRPM() <= 2300) {
                 finalTime = flywheelTimer.seconds();
@@ -82,7 +81,7 @@ public class DriveTestPedro extends LinearOpMode {
             updatePose();
 
             panelsTelemetry.addData("flywheel velocity (rpm)", subShooter.getVelocityRPM());
-            panelsTelemetry.addData("flywheel target (rpm)", PIDConfig.targetVelocity);
+            panelsTelemetry.addData("flywheel target (rpm)", Configurables.targetVelocity);
 
             drawUtil.drawRobot(robotPose.x(), robotPose.y(), robotPose.heading());
 
@@ -96,10 +95,10 @@ public class DriveTestPedro extends LinearOpMode {
             telemetry.addLine();
             telemetry.addData("flywheel Velocity (rpm)", subShooter.getVelocityRPM());
             telemetry.addData("flywheel timer (seconds)", finalTime);
-            telemetry.addData("target flywheel velocity", PIDConfig.targetVelocity);
+            telemetry.addData("target flywheel velocity", Configurables.targetVelocity);
             telemetry.addData("P", pidstore.p);
             telemetry.addData("F", pidstore.f);
-            telemetry.addData("Target P", PIDConfig.shooterP);
+            telemetry.addData("Target P", Configurables.shooterP);
 
             updateTelemetry(telemetry);
         }

@@ -51,7 +51,7 @@ public class SubSystemShooter {
         return flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void intake(boolean enable) {
-        intakeMotor.setPower(enable ? 0.5 : 0);
+    public void intakePower(double power) {
+        intakeMotor.setPower(power);
     }
 }
