@@ -2,11 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.math.Pose;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Config
 public class Waypoints
@@ -71,24 +66,24 @@ public class Waypoints
 //    /// /////////////////////////////////////////////////////////////////////////////////////////////////
 //    /// /////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public Waypoints(RobotConstants.alliance alliance, RobotConstants.location location)
+    public Waypoints(RobotConstantsOld.alliance alliance, RobotConstantsOld.location location)
     {
         setWaypoints(alliance, location);
     }
-    public void setWaypoints(RobotConstants.alliance alliance, RobotConstants.location location) {
-        if (alliance == RobotConstants.alliance.BLUE)
+    public void setWaypoints(RobotConstantsOld.alliance alliance, RobotConstantsOld.location location) {
+        if (alliance == RobotConstantsOld.alliance.BLUE)
         {
             //Alliance specific poses
             goalPoint = blueGoalPoint;//Where is the goal?
             endgameParkBoxPose = blueEndgameBoxPose;//Where is the end game park box?
             //Start location specific poses
-            if (location == RobotConstants.location.FRONT)
+            if (location == RobotConstantsOld.location.FRONT)
             {
                 startingPose = blueStartFrontPose;//Where are we starting?
                 autoShootFromPose = blueShootFromFrontPose;//Where should we shoot from?
                 autoEndParkPose = blueAutoParkAtFrontPose;//Where should we park at the end of auto?
             }
-            else if (location == RobotConstants.location.BACK)
+            else if (location == RobotConstantsOld.location.BACK)
             {
                 startingPose = blueStartBackPose;//Where are we starting?
                 autoShootFromPose = blueShootFromBackPose;//Where should we shoot from?
@@ -107,13 +102,13 @@ public class Waypoints
             goalPoint = redGoalPoint;//Where is the goal?
             endgameParkBoxPose = redEndgameBoxPose;//Where is the end game park box?
             //Start location specific poses
-            if (location == RobotConstants.location.FRONT)
+            if (location == RobotConstantsOld.location.FRONT)
             {
                 startingPose = redStartFrontPose;//Where are we starting?
                 autoShootFromPose = redShootFromFrontPose;//Where should we shoot from?
                 autoEndParkPose = redAutoParkAtFrontPose;//Where should we park at the end of auto?
             }
-            else if (location == RobotConstants.location.BACK)
+            else if (location == RobotConstantsOld.location.BACK)
             {
                 startingPose = redStartBackPose;//Where are we starting?
                 autoShootFromPose = redShootFromBackPose;//Where should we shoot from?

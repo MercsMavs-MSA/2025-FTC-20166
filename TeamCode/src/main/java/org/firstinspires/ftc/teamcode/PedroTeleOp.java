@@ -82,9 +82,9 @@ public class PedroTeleOp extends OpMode {
     private boolean shouldDoPositionLoop = false;
     boolean currentlyTurning = false;
     private Telemetry telemetryA;
-    private RobotConstants.alliance alliance;
+    private RobotConstantsOld.alliance alliance;
     private Object centricity = true;
-    private RobotConstants.location location;
+    private RobotConstantsOld.location location;
 
     private Pose startingPose = null;
     private int joystickMultiplier;
@@ -97,7 +97,7 @@ public class PedroTeleOp extends OpMode {
     private boolean defaultFieldCentric = true;
     private SubSystemRobotID subSystemRobotID;
     private Pose robotPose;
-    private RobotConstants robotConstants;
+    private RobotConstantsOld robotConstantsOld;
     RevBlinkinLedDriver blinkinLedDriver;
     RevBlinkinLedDriver.BlinkinPattern pattern;
     private Waypoints waypoints;
@@ -109,8 +109,8 @@ public class PedroTeleOp extends OpMode {
         try
         {
             subSystemRobotID = new SubSystemRobotID(hardwareMap);
-            robotConstants = new RobotConstants(subSystemRobotID.getRobotID());
-            subSystemShooterOld = new SubSystemShooterOld(hardwareMap, robotConstants);
+            robotConstantsOld = new RobotConstantsOld(subSystemRobotID.getRobotID());
+            subSystemShooterOld = new SubSystemShooterOld(hardwareMap, robotConstantsOld);
         }
         catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -159,7 +159,7 @@ public class PedroTeleOp extends OpMode {
         boolean positionGoodFromAuto = false;
         boolean allianceGoodFromAuto = false;
         startingPose = (Pose) blackboard.get("Position");
-        alliance = (RobotConstants.alliance) blackboard.get("Alliance");
+        alliance = (RobotConstantsOld.alliance) blackboard.get("Alliance");
         centricity = blackboard.get("Centricity");
         follower = Constants.create(hardwareMap);
         if (startingPose != null)
@@ -185,7 +185,7 @@ public class PedroTeleOp extends OpMode {
         }
         else
         {
-            waypoints = new Waypoints(RobotConstants.alliance.BLUE, RobotConstants.location.TEST);
+            waypoints = new Waypoints(RobotConstantsOld.alliance.BLUE, RobotConstantsOld.location.TEST);
             startingPose = waypoints.startingPose;
             follower.setPose(startingPose);
             updatePose();
@@ -201,48 +201,48 @@ public class PedroTeleOp extends OpMode {
 
         if (gamepad1.aWasPressed())
         {
-            alliance = RobotConstants.alliance.RED;
-            location = RobotConstants.location.FRONT;
+            alliance = RobotConstantsOld.alliance.RED;
+            location = RobotConstantsOld.location.FRONT;
             startPosVerbose = "Against audience wall, near red goal, forward";
             allianceVerbose = "Red";
             return true;
         }
         else if (gamepad1.bWasPressed())
         {
-            alliance = RobotConstants.alliance.RED;
-            location = RobotConstants.location.BACK;
+            alliance = RobotConstantsOld.alliance.RED;
+            location = RobotConstantsOld.location.BACK;
             startPosVerbose = "Against red goal, right wheels on tape, top right corner touching goal";
             allianceVerbose = "Red";
             return true;
         }
         else if (gamepad1.xWasPressed())
         {
-            alliance = RobotConstants.alliance.BLUE;
-            location = RobotConstants.location.FRONT;
+            alliance = RobotConstantsOld.alliance.BLUE;
+            location = RobotConstantsOld.location.FRONT;
             startPosVerbose = "Against audience wall, near blue goal, forward";
             allianceVerbose = "Blue";
             return true;
         }
         else if (gamepad1.yWasPressed())
         {
-            alliance = RobotConstants.alliance.BLUE;
-            location = RobotConstants.location.BACK;
+            alliance = RobotConstantsOld.alliance.BLUE;
+            location = RobotConstantsOld.location.BACK;
             startPosVerbose = "Against blue goal, left wheels on tape, top left corner touching goal";
             allianceVerbose = "Blue";
             return true;
         }
         else if (gamepad1.rightBumperWasPressed())
         {
-            alliance = RobotConstants.alliance.BLUE;
-            location = RobotConstants.location.TEST;
+            alliance = RobotConstantsOld.alliance.BLUE;
+            location = RobotConstantsOld.location.TEST;
             startPosVerbose = "Testing, in bottom left corner facing right (BLUE)";
             allianceVerbose = "Blue";
             return true;
         }
         else if (gamepad1.leftBumperWasPressed())
         {
-            alliance = RobotConstants.alliance.RED;
-            location = RobotConstants.location.TEST;
+            alliance = RobotConstantsOld.alliance.RED;
+            location = RobotConstantsOld.location.TEST;
             startPosVerbose = "Testing, in bottom left corner facing right (RED)";
             allianceVerbose = "Red";
             return true;
@@ -252,11 +252,11 @@ public class PedroTeleOp extends OpMode {
     }
     private void changeAllianceMultiplier()
     {
-        if (alliance == RobotConstants.alliance.RED)
+        if (alliance == RobotConstantsOld.alliance.RED)
         {
             joystickMultiplier = 1;
         }
-        else if (alliance == RobotConstants.alliance.BLUE)
+        else if (alliance == RobotConstantsOld.alliance.BLUE)
         {
             joystickMultiplier = -1;
         }
@@ -457,8 +457,8 @@ public class PedroTeleOp extends OpMode {
 
         telemetryA.addLine();
         telemetryA.addData("RobotID", subSystemRobotID.getRobotID());
-        telemetryA.addData("Robot podX offset", robotConstants.podX);
-        telemetryA.addData("Robot podY offset", robotConstants.podY);
+        telemetryA.addData("Robot podX offset", robotConstantsOld.podX);
+        telemetryA.addData("Robot podY offset", robotConstantsOld.podY);
         telemetryA.addData("DTG", DTG);
 
         telemetryA.addLine();
@@ -529,7 +529,7 @@ public class PedroTeleOp extends OpMode {
     public void start()
     {
         subSystemShooterOld.setGoalPose(goalPose);
-        subSystemShooterOld.setAgitator(robotConstants.agitator);
+        subSystemShooterOld.setAgitator(robotConstantsOld.agitator);
         follower.update();
 //        follower.startTeleopDrive();
         timer.reset();

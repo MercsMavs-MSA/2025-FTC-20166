@@ -24,7 +24,7 @@ public class DriveTestPedro extends LinearOpMode {
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     private DrawRobot drawUtil = new DrawRobot();
     private SubSystemShooter subShooter;
-    private Pose robotPose = new Pose(8, 8, 0);
+    private Pose robotPose = new Pose(0, 0, 90);
     private Follower follower = null;
 
     private void updatePose() {
@@ -70,7 +70,7 @@ public class DriveTestPedro extends LinearOpMode {
                 Configurables.targetVelocity = 0;
             }
 
-            subShooter.intakePower(gamepad1.dpad_up ? Configurables.intakePower : 0);
+            subShooter.setIntakeBangBangRPM(gamepad1.dpad_up ? Configurables.intakeVelocity : 0);
 
             subShooter.setBangBangRPM(Configurables.targetVelocity);
 
@@ -82,6 +82,10 @@ public class DriveTestPedro extends LinearOpMode {
 
             panelsTelemetry.addData("flywheel velocity (rpm)", subShooter.getVelocityRPM());
             panelsTelemetry.addData("flywheel target (rpm)", Configurables.targetVelocity);
+            panelsTelemetry.addLine("");
+            panelsTelemetry.addData("x", robotPose.x());
+            panelsTelemetry.addData("y", robotPose.y());
+            panelsTelemetry.addData("heading", Math.toDegrees(robotPose.heading()));
 
             drawUtil.drawRobot(robotPose.x(), robotPose.y(), robotPose.heading());
 

@@ -9,13 +9,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotConstantsOld;
 import org.firstinspires.ftc.teamcode.Utilities.GeneralUtils;
 import org.firstinspires.ftc.teamcode.Utilities.LERP;
 
 public class SubSystemShooterOld {
     private LERP shooterTiltLeftLERP;
-    private RobotConstants robotConstants;
+    private RobotConstantsOld robotConstantsOld;
     private LERP shooterTiltRightLERP;
     private LERP shooterAngleLERP;
     private LERP shooterVelocityLERP;
@@ -40,13 +40,13 @@ public class SubSystemShooterOld {
     private double shooterTargetVelocity;
     private double intakeShooterVelocity;
     private Pose goalPose;
-    public SubSystemShooterOld(HardwareMap hardwareMap, RobotConstants robotConstants) throws InterruptedException {
-        this.robotConstants = robotConstants;
+    public SubSystemShooterOld(HardwareMap hardwareMap, RobotConstantsOld robotConstantsOld) throws InterruptedException {
+        this.robotConstantsOld = robotConstantsOld;
 
-        shooterTiltLeftLERP = new LERP(robotConstants.shooterMinAngle,robotConstants.leftMinAngleSetting,robotConstants.shooterMaxAngle,robotConstants.leftMaxAngleSetting,true);
-        shooterTiltRightLERP = new LERP(robotConstants.shooterMinAngle,robotConstants.rightMinAngleSetting,robotConstants.shooterMaxAngle,robotConstants.rightMaxAngleSetting,true);
-        shooterAngleLERP = new LERP(robotConstants.farDistance,robotConstants.farShooterAngle,robotConstants.nearDistance,robotConstants.nearShooterAngle,true);
-        shooterVelocityLERP = new LERP(robotConstants.farDistance,robotConstants.farVelocity,robotConstants.nearDistance,robotConstants.nearVelocity,false);
+        shooterTiltLeftLERP = new LERP(robotConstantsOld.shooterMinAngle, robotConstantsOld.leftMinAngleSetting, robotConstantsOld.shooterMaxAngle, robotConstantsOld.leftMaxAngleSetting,true);
+        shooterTiltRightLERP = new LERP(robotConstantsOld.shooterMinAngle, robotConstantsOld.rightMinAngleSetting, robotConstantsOld.shooterMaxAngle, robotConstantsOld.rightMaxAngleSetting,true);
+        shooterAngleLERP = new LERP(robotConstantsOld.farDistance, robotConstantsOld.farShooterAngle, robotConstantsOld.nearDistance, robotConstantsOld.nearShooterAngle,true);
+        shooterVelocityLERP = new LERP(robotConstantsOld.farDistance, robotConstantsOld.farVelocity, robotConstantsOld.nearDistance, robotConstantsOld.nearVelocity,false);
 
         transferArm = hardwareMap.get(Servo.class, "lift");
 
@@ -162,13 +162,13 @@ public class SubSystemShooterOld {
     {
         if (enabled)
         {
-            transferArm.setPosition(robotConstants.liftArmUpAngle);
-            gateServo.setPosition(robotConstants.gateUpAngle);
+            transferArm.setPosition(robotConstantsOld.liftArmUpAngle);
+            gateServo.setPosition(robotConstantsOld.gateUpAngle);
         }
         else
         {
-            transferArm.setPosition(robotConstants.liftArmDownAngle);
-            gateServo.setPosition(robotConstants.gateDownAngle);
+            transferArm.setPosition(robotConstantsOld.liftArmDownAngle);
+            gateServo.setPosition(robotConstantsOld.gateDownAngle);
 
         }
     }
@@ -187,7 +187,7 @@ public class SubSystemShooterOld {
         //this is for turret rotation.
         currentTurretAngle = getTurretAngle();
         currentTurretAngleError =  turretDelta - currentTurretAngle;
-        turretRotatePower = GeneralUtils.clampRange(RobotConstants.turretRotationP*currentTurretAngleError, RobotConstants.turretMaxPower);
+        turretRotatePower = GeneralUtils.clampRange(RobotConstantsOld.turretRotationP*currentTurretAngleError, RobotConstantsOld.turretMaxPower);
         setTurretRotationSpeed(turretRotatePower);
     }
 
@@ -244,8 +244,8 @@ public class SubSystemShooterOld {
     {
         if (enabled)
         {
-            transferServo1.setPower(RobotConstants.turretMaxPower);
-            transferServo2.setPower(-RobotConstants.turretMaxPower);
+            transferServo1.setPower(RobotConstantsOld.turretMaxPower);
+            transferServo2.setPower(-RobotConstantsOld.turretMaxPower);
         }
         else
         {

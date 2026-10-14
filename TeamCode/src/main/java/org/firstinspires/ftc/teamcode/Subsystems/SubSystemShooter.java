@@ -29,11 +29,20 @@ public class SubSystemShooter {
         }
     }
 
+    public void setIntakeBangBangRPM(double velocity) {
+        if (getIntakeVelocityRPM() < velocity) {
+            intakeMotor.setPower(1);
+        } else {
+            intakeMotor.setPower(0);
+        }
+    }
+
     public void setPower(double power) {flywheel.setPower(power);}
 
     public double getVelocityRPM() {
         return flywheel.getVelocity() / 28 * 60;
     }
+    public double getIntakeVelocityRPM() {return intakeMotor.getVelocity() / 28 * 60;}
 
     public void updatePID(double p, double i, double d, double f) {
         PIDFCoefficients pidstore;
@@ -49,9 +58,5 @@ public class SubSystemShooter {
 
     public PIDFCoefficients getPID() {
         return flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    public void intakePower(double power) {
-        intakeMotor.setPower(power);
     }
 }

@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotConstantsOld;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemRobotID;
 import org.firstinspires.ftc.teamcode.Utilities.GeneralUtils;
 import org.firstinspires.ftc.teamcode.Waypoints;
@@ -26,12 +26,12 @@ public class AutonTwo extends OpMode {
     private SubSystemShooterOld subSystemShooterOld;
 
     private SubSystemRobotID subSystemRobotID;
-    private RobotConstants robotConstants;
+    private RobotConstantsOld robotConstantsOld;
     private Telemetry telemetryA;
     private boolean defaultFieldCentric = true;
     private String allianceVerbose;
-    private RobotConstants.alliance alliance;
-    private RobotConstants.location location;
+    private RobotConstantsOld.alliance alliance;
+    private RobotConstantsOld.location location;
     public static double telemetryUpper = 2500;
     public static double telemetryLower = 0;
     private String startPosVerbose;
@@ -165,12 +165,12 @@ public class AutonTwo extends OpMode {
     public void init()
     {
         //Set default alliance and location etc...
-        alliance = RobotConstants.alliance.BLUE;
-        location = RobotConstants.location.TEST;
+        alliance = RobotConstantsOld.alliance.BLUE;
+        location = RobotConstantsOld.location.TEST;
         try {
             subSystemRobotID = new SubSystemRobotID(hardwareMap);
-            robotConstants = new RobotConstants(subSystemRobotID.getRobotID());
-            subSystemShooterOld = new SubSystemShooterOld(hardwareMap, robotConstants);
+            robotConstantsOld = new RobotConstantsOld(subSystemRobotID.getRobotID());
+            subSystemShooterOld = new SubSystemShooterOld(hardwareMap, robotConstantsOld);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -200,48 +200,48 @@ public class AutonTwo extends OpMode {
         }
         if (gamepad1.aWasPressed())
         {
-            alliance = RobotConstants.alliance.RED;
-            location = RobotConstants.location.FRONT;
+            alliance = RobotConstantsOld.alliance.RED;
+            location = RobotConstantsOld.location.FRONT;
             startPosVerbose = "Against audience wall, near red goal, forward";
             allianceVerbose = "Red";
             return true;
         }
         else if (gamepad1.bWasPressed())
         {
-            alliance = RobotConstants.alliance.RED;
-            location = RobotConstants.location.BACK;
+            alliance = RobotConstantsOld.alliance.RED;
+            location = RobotConstantsOld.location.BACK;
             startPosVerbose = "Against red goal, right wheels on tape, top right corner touching goal";
             allianceVerbose = "Red";
             return true;
         }
         else if (gamepad1.xWasPressed())
         {
-            alliance = RobotConstants.alliance.BLUE;
-            location = RobotConstants.location.FRONT;
+            alliance = RobotConstantsOld.alliance.BLUE;
+            location = RobotConstantsOld.location.FRONT;
             startPosVerbose = "Against audience wall, near blue goal, forward";
             allianceVerbose = "Blue";
             return true;
         }
         else if (gamepad1.yWasPressed())
         {
-            alliance = RobotConstants.alliance.BLUE;
-            location = RobotConstants.location.BACK;
+            alliance = RobotConstantsOld.alliance.BLUE;
+            location = RobotConstantsOld.location.BACK;
             startPosVerbose = "Against blue goal, left wheels on tape, top left corner touching goal";
             allianceVerbose = "Blue";
             return true;
         }
         else if (gamepad1.rightBumperWasPressed())
         {
-            alliance = RobotConstants.alliance.BLUE;
-            location = RobotConstants.location.TEST;
+            alliance = RobotConstantsOld.alliance.BLUE;
+            location = RobotConstantsOld.location.TEST;
             startPosVerbose = "Testing, in bottom left corner facing right (BLUE)";
             allianceVerbose = "Blue";
             return true;
         }
         else if (gamepad1.leftBumperWasPressed())
         {
-            alliance = RobotConstants.alliance.RED;
-            location = RobotConstants.location.TEST;
+            alliance = RobotConstantsOld.alliance.RED;
+            location = RobotConstantsOld.location.TEST;
             startPosVerbose = "Testing, in bottom left corner facing right (RED)";
             allianceVerbose = "Red";
             return true;
@@ -293,7 +293,7 @@ public class AutonTwo extends OpMode {
     {
         subSystemShooterOld.setGoalPose(goalPose);
         opmodeTimer.reset();
-        subSystemShooterOld.setAgitator(robotConstants.agitator);
+        subSystemShooterOld.setAgitator(robotConstantsOld.agitator);
         subSystemShooterOld.setTransfer(true);
     }
 
@@ -349,8 +349,8 @@ public class AutonTwo extends OpMode {
         telemetry.addData("Follower busy?", follower.isBusy());
         telemetry.addData("Alliance", alliance);
         telemetry.addLine();
-        telemetry.addData("PodXOffset", robotConstants.podX);
-        telemetry.addData("PodYOffset", robotConstants.podY);
+        telemetry.addData("PodXOffset", robotConstantsOld.podX);
+        telemetry.addData("PodYOffset", robotConstantsOld.podY);
         telemetryA.addData("Turret Target Velocity", subSystemShooterOld.getShooterTargetVelocity());
         telemetryA.addData("Turret Actual Velocity", subSystemShooterOld.getShooterVelocity());
         telemetryA.addData("Upper: ", telemetryUpper);
