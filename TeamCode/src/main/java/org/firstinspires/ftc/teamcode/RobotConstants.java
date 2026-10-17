@@ -9,28 +9,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RobotConstants {
-    public static class positionConstants {
-        public Pose backRedStart = new Pose(8.5, 132, 0);
-        public Pose backRedGoal = new Pose(58, 93.5, 270);
+    public static class PositionConstants {
+        public static Pose audienceRedStart = new Pose(8.5,9.5, 0);
+        public static Pose audienceRedGoal = new Pose(58, 50, 90);
     }
 
-    public static class shooterConstants {
-        public double closeVel = 2300;
-        public double cornerVel = 2500;
-        public double closeAng = -13;
-        public double cornerAng = 10;
-        public double farDist = 62.71;
-        private List<Pose> constructPentagonPoints() {
-            List<Pose> pentagonPoints = new ArrayList<>();
+    public static class ShooterConstants {
+        public static double gateMin = 0;
+        public static double gateMax = 1;
+        public static double closeVel = 2300;
+        public static double cornerVel = 2500;
+        public static double closeAng = -13;
+        public static double cornerAng = 10;
+        public static double farDist = 62.71;
+        private static List<Pose> constructRedAudiencePentagonPoints() {
+            List<Pose> redAudiencePentagonPoints = new ArrayList<>();
 
-//            pentagonPoints.add(new Pose());
+            redAudiencePentagonPoints.add(new Pose(0,0));
+            redAudiencePentagonPoints.add(new Pose(22.6, 35.4));
+            redAudiencePentagonPoints.add(new Pose(69.8, 35.4));
+            redAudiencePentagonPoints.add(new Pose(90,0));
 
-            return pentagonPoints;
+            return redAudiencePentagonPoints;
         }
 
-        public LERP velocityLERP = new LERP(0, closeVel, farDist, cornerVel, true);
-        public LERP angleLERP = new LERP(0, closeAng, farDist, cornerAng, true);
+        public static LERP velocityLERP = new LERP(0, closeVel, farDist, cornerVel, true);
+        public static LERP angleLERP = new LERP(0, closeAng, farDist, cornerAng, true);
 
-        public ZoneDetector pentagon = new ZoneDetector(constructPentagonPoints());
+        public static ZoneDetector redAudiencePentagon = new ZoneDetector(constructRedAudiencePentagonPoints());
     }
 }

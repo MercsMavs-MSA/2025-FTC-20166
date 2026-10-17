@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.ManualDrive;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,8 +12,11 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemBlinkIn;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemShooter;
 import org.firstinspires.ftc.teamcode.Utilities.DrawRobot;
+import org.firstinspires.ftc.teamcode.Utilities.GeneralUtils;
+import org.firstinspires.ftc.teamcode.Utilities.ZoneDetector;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 @TeleOp
@@ -24,8 +28,12 @@ public class DriveTestPedro extends LinearOpMode {
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     private DrawRobot drawUtil = new DrawRobot();
     private SubSystemShooter subShooter;
-    private Pose robotPose = new Pose(0, 0, 90);
+    private SubSystemBlinkIn blinkIn;
+    private Pose robotPose;
+    private Pose goalPose;
+    private Pose heldPose;
     private Follower follower = null;
+    private ZoneDetector pentagon1;
 
     private void updatePose() {
         follower.update();
@@ -33,15 +41,33 @@ public class DriveTestPedro extends LinearOpMode {
     }
     public void initializeHardware() {
         subShooter = new SubSystemShooter(hardwareMap);
+        blinkIn = new SubSystemBlinkIn(hardwareMap);
         follower = Constants.create(hardwareMap);
-        follower.setPose(robotPose);
+    }
+
+    public void sequenceShooting() {
+        follower.hold(new Pose(heldPose.x(), heldPose.y(), GeneralUtils.getPointsHeading(goalPose.x(), goalPose.y(), heldPose.x(), heldPose.y())));
+
+        if (subShooter.isReady) {
+            blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
+            subShooter.gateControl(1, true);
+            subShooter.gateControl(2, true);
+        }
     }
 
     public void runOpMode() throws InterruptedException {
         initializeHardware();
         flywheelTimer.reset();
 
-        waitForStart();
+        while(opModeInInit()) {
+            goalPose = RobotConstants.PositionConstants.audienceRedGoal;
+            robotPose = RobotConstants.PositionConstants.audienceRedStart;
+
+            follower.setPose(robotPose);
+
+            pentagon1 = RobotConstants.ShooterConstants.redAudiencePentagon;
+        }
+
         while (opModeIsActive())
         {
             if (gamepad1.right_bumper) {
@@ -63,16 +89,30 @@ public class DriveTestPedro extends LinearOpMode {
 
             subShooter.updatePID(Configurables.shooterP, Configurables.shooterI, Configurables.shooterD, Configurables.shooterF);
 
-            if (gamepad1.dpad_right) {
-                Configurables.targetVelocity = 2400;
-                flywheelTimer.reset();
+//            if (gamepad1.dpad_right) {
+//                Configurables.targetVelocity = 2400;
+//                flywheelTimer.reset();
+//            } else if (gamepad1.dpad_down) {
+//                Configurables.targetVelocity = 0;
+//            }
+
+//            subShooter.setIntakeBangBangRPM(gamepad1.dpad_up ? Configurables.intakeVelocity : 0);
+
+            if (gamepad1.dpad_up) {
+                subShooter.setIntakePower(1);
             } else if (gamepad1.dpad_down) {
-                Configurables.targetVelocity = 0;
+                subShooter.setIntakePower(-1);
+            } else {
+                subShooter.setIntakePower(0);
             }
 
-            subShooter.setIntakeBangBangRPM(gamepad1.dpad_up ? Configurables.intakeVelocity : 0);
+            subShooter.updateFlywheel(robotPose, goalPose);
 
-            subShooter.setBangBangRPM(Configurables.targetVelocity);
+            if (!gamepad1.y) {heldPose = robotPose;}
+
+            if (pentagon1.isRobotInside(robotPose)) {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN); if (gamepad1.y) {sequenceShooting();}} else {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);}
+
+//            subShooter.setBangBangRPM(Configurables.targetVelocity);
 
             if (subShooter.getVelocityRPM() <= 2300) {
                 finalTime = flywheelTimer.seconds();
