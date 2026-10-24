@@ -5,6 +5,8 @@ import com.bylazar.configurables.annotations.Configurable;
 @Configurable
 public class Configurables {
     public static double intakeVelocity = 2600;
+    public static double leftAngle = 0;
+    public static double rightAngle = 0;
     public static double targetVelocity = 0;
     public static double shooterP = 10;
     public static double shooterI = 0;

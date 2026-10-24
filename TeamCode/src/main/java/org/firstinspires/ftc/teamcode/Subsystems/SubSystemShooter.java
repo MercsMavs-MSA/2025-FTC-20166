@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import android.graphics.Bitmap;
+
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -7,15 +9,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Configurables;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.Utilities.GeneralUtils;
 
 public class SubSystemShooter {
     private DcMotorEx flywheel;
     private DcMotorEx intakeMotor;
-    private Servo gate1;
-    private Servo gate2;
-    private Servo angle;
+    private Servo gateLeft;
+    private Servo gateRight;
+    private Servo angleLeft;
+    private Servo angleRight;
     public boolean isReady = false;
 
     public SubSystemShooter(HardwareMap hwmap) {
@@ -32,9 +36,10 @@ public class SubSystemShooter {
 
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        gate1 = hwmap.get(Servo.class, "gate1");
-        gate2 = hwmap.get(Servo.class, "gate2");
-        angle = hwmap.get(Servo.class, "angle");
+        gateLeft = hwmap.get(Servo.class, "gateL");
+        gateRight = hwmap.get(Servo.class, "gateR");
+        angleLeft = hwmap.get(Servo.class, "angleL");
+        angleRight = hwmap.get(Servo.class, "angleR");
     }
 
     public void setVelocityRPM(double velocity) {
@@ -83,7 +88,7 @@ public class SubSystemShooter {
     }
 
     public void gateControl(int gate, boolean up) {
-        Servo gateUsed = (gate == 1) ? gate1 : gate2;
+        Servo gateUsed = (gate == 1) ? gateLeft : gateRight;
 
         gateUsed.setPosition((up) ? RobotConstants.ShooterConstants.gateMax : RobotConstants.ShooterConstants.gateMin);
     }
@@ -93,6 +98,9 @@ public class SubSystemShooter {
         double speed = RobotConstants.ShooterConstants.velocityLERP.interpolated(dtg);
 
         setBangBangRPM(speed);
+
+        angleLeft.setPosition(Configurables.leftAngle);
+        angleRight.setPosition(Configurables.rightAngle);
 
         isReady = (Math.abs(getVelocityRPM() - speed) <= 50);
     }
