@@ -21,6 +21,7 @@ public class SubSystemShooter {
     private Servo angleLeft;
     private Servo angleRight;
     public boolean isReady = false;
+    public double dtg = 0;
 
     public SubSystemShooter(HardwareMap hwmap) {
         flywheel = hwmap.get(DcMotorEx.class, "flywheel");
@@ -97,10 +98,12 @@ public class SubSystemShooter {
         double dtg = GeneralUtils.getPointsDistance(goal.x(), goal.y(), robotPose.x(), robotPose.y());
         double speed = RobotConstants.ShooterConstants.velocityLERP.interpolated(dtg);
 
-        setBangBangRPM(speed);
+        this.dtg = dtg;
 
-        angleLeft.setPosition(Configurables.leftAngle);
-        angleRight.setPosition(Configurables.rightAngle);
+        setBangBangRPM(Configurables.intakeVelocity);
+
+        angleLeft.setPosition(RobotConstants.ShooterConstants.servoOneLERP.interpolated(Configurables.position));
+        angleRight.setPosition(RobotConstants.ShooterConstants.servoTwoLERP.interpolated(Configurables.position));
 
         isReady = (Math.abs(getVelocityRPM() - speed) <= 50);
     }

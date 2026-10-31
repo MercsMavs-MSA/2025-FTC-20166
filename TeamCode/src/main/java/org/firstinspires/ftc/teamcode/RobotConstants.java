@@ -17,8 +17,10 @@ public class RobotConstants {
     public static class ShooterConstants {
         public static double gateMin = 0;
         public static double gateMax = 1;
-        public static double angleOffset1 = 0;
-        public static double angleOffset2 = 0;
+        public static double servoOneUp = 0.97;
+        public static double servoTwoUp = 0.01;
+        public static double servoOneDown = 0.26;
+        public static double servoTwoDown = 0.72;
         public static double closeVel = 2300;
         public static double cornerVel = 2500;
         public static double closeAng = -13;
@@ -36,6 +38,8 @@ public class RobotConstants {
         }
 
         public static LERP velocityLERP = new LERP(0, closeVel, farDist, cornerVel, true);
+        public static LERP servoOneLERP = new LERP(0, servoOneUp, 100, servoOneDown, true);
+        public static LERP servoTwoLERP = new LERP(0, servoTwoUp, 100, servoTwoDown, true);
 
         public static ZoneDetector redAudiencePentagon = new ZoneDetector(constructRedAudiencePentagonPoints());
     }

@@ -34,10 +34,30 @@ public class DriveTestPedro extends LinearOpMode {
     private Pose heldPose;
     private Follower follower = null;
     private ZoneDetector pentagon1;
+    public enum allianceColors {
+        RED,
+        BLUE
+    }
+
+    private allianceColors alliance;
 
     private void updatePose() {
         follower.update();
         robotPose = follower.pose();
+    }
+    private void updateInitialSettings() {
+        if (gamepad1.yWasPressed()) {
+            alliance = allianceColors.RED;
+            goalPose = RobotConstants.PositionConstants.audienceRedGoal;
+            robotPose = RobotConstants.PositionConstants.audienceRedStart;
+            pentagon1 = RobotConstants.ShooterConstants.redAudiencePentagon;
+        } else if (gamepad1.bWasPressed()) {
+            alliance = allianceColors.RED;
+        } else if (gamepad1.xWasPressed()) {
+            alliance = allianceColors.BLUE;
+        } else if (gamepad1.aWasPressed()) {
+            alliance = allianceColors.BLUE;
+        }
     }
     public void initializeHardware() {
         subShooter = new SubSystemShooter(hardwareMap);
@@ -58,14 +78,14 @@ public class DriveTestPedro extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         initializeHardware();
         flywheelTimer.reset();
+        robotPose = RobotConstants.PositionConstants.audienceRedStart;
+        goalPose = RobotConstants.PositionConstants.audienceRedGoal;
+        pentagon1 = RobotConstants.ShooterConstants.redAudiencePentagon;
 
         while(opModeInInit()) {
-            goalPose = RobotConstants.PositionConstants.audienceRedGoal;
-            robotPose = RobotConstants.PositionConstants.audienceRedStart;
-
+            updateInitialSettings();
             follower.setPose(robotPose);
-
-            pentagon1 = RobotConstants.ShooterConstants.redAudiencePentagon;
+            updatePose();
         }
 
         while (opModeIsActive())
@@ -122,6 +142,7 @@ public class DriveTestPedro extends LinearOpMode {
 
             panelsTelemetry.addData("flywheel velocity (rpm)", subShooter.getVelocityRPM());
             panelsTelemetry.addData("flywheel target (rpm)", Configurables.targetVelocity);
+            panelsTelemetry.addData("DTG", subShooter.dtg);
             panelsTelemetry.addLine("");
             panelsTelemetry.addData("x", robotPose.x());
             panelsTelemetry.addData("y", robotPose.y());
