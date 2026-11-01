@@ -100,10 +100,10 @@ public class SubSystemShooter {
 
         this.dtg = dtg;
 
-        setBangBangRPM(Configurables.intakeVelocity);
+        setBangBangRPM(speed);
 
-        angleLeft.setPosition(RobotConstants.ShooterConstants.servoOneLERP.interpolated(Configurables.position));
-        angleRight.setPosition(RobotConstants.ShooterConstants.servoTwoLERP.interpolated(Configurables.position));
+        angleLeft.setPosition(RobotConstants.ShooterConstants.servoOneLERP.interpolated(RobotConstants.ShooterConstants.positionLERP.interpolated(dtg)));
+        angleRight.setPosition(RobotConstants.ShooterConstants.servoTwoLERP.interpolated(RobotConstants.ShooterConstants.positionLERP.interpolated(dtg)));
 
         isReady = (Math.abs(getVelocityRPM() - speed) <= 50);
     }

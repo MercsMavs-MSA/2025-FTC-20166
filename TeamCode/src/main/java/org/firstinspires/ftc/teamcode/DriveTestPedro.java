@@ -30,6 +30,7 @@ public class DriveTestPedro extends LinearOpMode {
     private SubSystemShooter subShooter;
     private SubSystemBlinkIn blinkIn;
     private Pose robotPose;
+    private String robotString;
     private Pose goalPose;
     private Pose heldPose;
     private Follower follower = null;
@@ -50,6 +51,7 @@ public class DriveTestPedro extends LinearOpMode {
             alliance = allianceColors.RED;
             goalPose = RobotConstants.PositionConstants.audienceRedGoal;
             robotPose = RobotConstants.PositionConstants.audienceRedStart;
+            robotString = "Audience wall, facing inward (RED)";
             pentagon1 = RobotConstants.ShooterConstants.redAudiencePentagon;
         } else if (gamepad1.bWasPressed()) {
             alliance = allianceColors.RED;
@@ -66,7 +68,11 @@ public class DriveTestPedro extends LinearOpMode {
     }
 
     public void sequenceShooting() {
-        follower.hold(new Pose(heldPose.x(), heldPose.y(), GeneralUtils.getPointsHeading(goalPose.x(), goalPose.y(), heldPose.x(), heldPose.y())));
+        double heading = GeneralUtils.getPointsHeading(goalPose.x(), goalPose.y(), heldPose.x(), heldPose.y());
+        follower.hold(new Pose(heldPose.x(), heldPose.y(), heading));
+
+        if (Math.abs(gamepad1.left_stick_x) >= 0.1) {heldPose = new Pose(heldPose.x() + gamepad1.left_stick_x, heldPose.y(), heading);}
+        if (Math.abs(gamepad1.left_stick_y) >= 0.1) {heldPose = new Pose(heldPose.x(), heldPose.y() + gamepad1.left_stick_y, heading);}
 
         if (subShooter.isReady) {
             blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
@@ -78,7 +84,9 @@ public class DriveTestPedro extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         initializeHardware();
         flywheelTimer.reset();
+        alliance = allianceColors.RED;
         robotPose = RobotConstants.PositionConstants.audienceRedStart;
+        robotString = "Audience wall, facing inward (RED)";
         goalPose = RobotConstants.PositionConstants.audienceRedGoal;
         pentagon1 = RobotConstants.ShooterConstants.redAudiencePentagon;
 
@@ -128,7 +136,9 @@ public class DriveTestPedro extends LinearOpMode {
 
             subShooter.updateFlywheel(robotPose, goalPose);
 
-            if (!gamepad1.y) {heldPose = robotPose;}
+            if (!gamepad1.y) {
+                heldPose = robotPose;
+            }
 
             if (pentagon1.isRobotInside(robotPose)) {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN); if (gamepad1.y) {sequenceShooting();}} else {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);}
 
