@@ -129,17 +129,21 @@ public class DriveTestPedro extends LinearOpMode {
 
         while (opModeIsActive())
         {
-            if (gamepad1.right_bumper) {
-                follower.manual(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
-            } else {
-                follower.manual(
-                        ManualDrive.fieldCentric(
-                                -gamepad1.left_stick_y,
-                                -gamepad1.left_stick_x,
-                                -gamepad1.right_stick_x,
-                                robotPose.heading()
-                        )
-                );
+            if (!gamepad1.y) {
+                if (gamepad1.right_bumper) {
+                    follower.manual(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+                } else {
+                    follower.manual(
+                            ManualDrive.fieldCentric(
+                                    -gamepad1.left_stick_y,
+                                    -gamepad1.left_stick_x,
+                                    -gamepad1.right_stick_x,
+                                    robotPose.heading()
+                            )
+                    );
+                }
+
+                heldPose = robotPose;
             }
 
             if (gamepad1.left_bumper) {
@@ -164,10 +168,6 @@ public class DriveTestPedro extends LinearOpMode {
             }
 
             subShooter.updateFlywheel(robotPose, goalPose1);
-
-            if (!gamepad1.y) {
-                heldPose = robotPose;
-            }
 
 //            if (pentagon1.isRobotInside(robotPose)) {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN); if (gamepad1.y) {sequenceShooting();}} else {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);}
 
