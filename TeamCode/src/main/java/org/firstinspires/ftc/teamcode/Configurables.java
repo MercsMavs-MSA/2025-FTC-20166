@@ -6,8 +6,4 @@ import com.bylazar.configurables.annotations.Configurable;
 public class Configurables {
     public static double position = 0;
     public static double targetVelocity = 0;
-    public static double shooterP = 10;
-    public static double shooterI = 0;
-    public static double shooterD = 0;
-    public static double shooterF = 15;
 }
