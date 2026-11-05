@@ -95,15 +95,20 @@ public class SubSystemShooter {
     }
 
     public void updateFlywheel(Pose robotPose, Pose goal) {
+        if (goal == null) {return;}
+
         double dtg = GeneralUtils.getPointsDistance(goal.x(), goal.y(), robotPose.x(), robotPose.y());
-        double speed = RobotConstants.ShooterConstants.velocityLERP.interpolated(dtg);
+        double speed = Configurables.targetVelocity; //RobotConstants.ShooterConstants.velocityLERP.interpolated(dtg);
 
         this.dtg = dtg;
 
         setBangBangRPM(speed);
 
-        angleLeft.setPosition(RobotConstants.ShooterConstants.servoOneLERP.interpolated(RobotConstants.ShooterConstants.positionLERP.interpolated(dtg)));
-        angleRight.setPosition(RobotConstants.ShooterConstants.servoTwoLERP.interpolated(RobotConstants.ShooterConstants.positionLERP.interpolated(dtg)));
+//        angleLeft.setPosition(RobotConstants.ShooterConstants.servoOneLERP.interpolated(RobotConstants.ShooterConstants.positionLERP.interpolated(dtg)));
+//        angleRight.setPosition(RobotConstants.ShooterConstants.servoTwoLERP.interpolated(RobotConstants.ShooterConstants.positionLERP.interpolated(dtg)));
+
+        angleLeft.setPosition(RobotConstants.ShooterConstants.servoOneLERP.interpolated(Configurables.position));
+        angleRight.setPosition(RobotConstants.ShooterConstants.servoTwoLERP.interpolated(Configurables.position));
 
         isReady = (Math.abs(getVelocityRPM() - speed) <= 50);
     }

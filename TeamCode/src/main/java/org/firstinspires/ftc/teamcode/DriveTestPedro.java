@@ -133,14 +133,25 @@ public class DriveTestPedro extends LinearOpMode {
                 if (gamepad1.right_bumper) {
                     follower.manual(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
                 } else {
-                    follower.manual(
-                            ManualDrive.fieldCentric(
-                                    -gamepad1.left_stick_y,
-                                    -gamepad1.left_stick_x,
-                                    -gamepad1.right_stick_x,
-                                    robotPose.heading()
-                            )
-                    );
+                    if (alliance == allianceColors.RED) {
+                        follower.manual(
+                                ManualDrive.fieldCentric(
+                                        -gamepad1.left_stick_y,
+                                        -gamepad1.left_stick_x,
+                                        -gamepad1.right_stick_x,
+                                        robotPose.heading()
+                                )
+                        );
+                    } else if (alliance == allianceColors.BLUE) {
+                        follower.manual(
+                                ManualDrive.fieldCentric(
+                                        gamepad1.left_stick_y,
+                                        gamepad1.left_stick_x,
+                                        -gamepad1.right_stick_x,
+                                        robotPose.heading()
+                                )
+                        );
+                    }
                 }
 
                 heldPose = robotPose;
@@ -167,11 +178,12 @@ public class DriveTestPedro extends LinearOpMode {
                 subShooter.setIntakePower(0);
             }
 
-            subShooter.updateFlywheel(robotPose, goalPose1);
-
 //            if (pentagon1.isRobotInside(robotPose)) {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN); if (gamepad1.y) {sequenceShooting();}} else {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);}
 
             currentGoal = whichPentagon();
+
+            subShooter.updateFlywheel(robotPose, currentGoal);
+
             if (currentGoal != null) {
                 blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                 if (gamepad1.y) {
