@@ -12,6 +12,7 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemBlinkIn;
+import org.firstinspires.ftc.teamcode.Subsystems.SubSystemLimelight;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemShooter;
 import org.firstinspires.ftc.teamcode.Utilities.DrawRobot;
 import org.firstinspires.ftc.teamcode.Utilities.GeneralUtils;
@@ -27,6 +28,7 @@ public class DriveTestPedro extends LinearOpMode {
     private DrawRobot drawUtil = new DrawRobot();
     private SubSystemShooter subShooter;
     private SubSystemBlinkIn blinkIn;
+    private SubSystemLimelight subLL;
     private Pose robotPose;
     private String robotString;
     private Pose goalPose1;
@@ -85,6 +87,7 @@ public class DriveTestPedro extends LinearOpMode {
     public void initializeHardware() {
         subShooter = new SubSystemShooter(hardwareMap);
         blinkIn = new SubSystemBlinkIn(hardwareMap);
+//        subLL = new SubSystemLimelight(hardwareMap);
         follower = Constants.create(hardwareMap);
     }
 
@@ -171,9 +174,9 @@ public class DriveTestPedro extends LinearOpMode {
 //            subShooter.setIntakeBangBangRPM(gamepad1.dpad_up ? Configurables.intakeVelocity : 0);
 
             if (gamepad1.dpad_up) {
-                subShooter.setIntakePower(1);
+                subShooter.setIntakePower(Configurables.intakePower);
             } else if (gamepad1.dpad_down) {
-                subShooter.setIntakePower(-1);
+                subShooter.setIntakePower(-Configurables.intakePower);
             } else {
                 subShooter.setIntakePower(0);
             }

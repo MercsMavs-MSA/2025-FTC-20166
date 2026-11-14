@@ -27,6 +27,10 @@ dependencies {
     implementation 'com.pedropathing:tuning:1.0.0'
     implementation 'com.pedropathing.ivy:pedro:1.1.1'
 
-    implementation 'com.bylazar:fullpanels:1.0.17'
+    implementation('com.bylazar:fullpanels:1.0.17') {
+        exclude group: 'dev.frozenmilk.sinister'
+        exclude group: 'dev.frozenmilk.dairy'
+    }
+
 
 }

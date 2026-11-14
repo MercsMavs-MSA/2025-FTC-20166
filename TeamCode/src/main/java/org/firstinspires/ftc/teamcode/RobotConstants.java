@@ -28,6 +28,10 @@ public class RobotConstants {
         public static double servoTwoUp = 0.01;
         public static double servoOneDown = 0.26;
         public static double servoTwoDown = 0.72;
+        public static double gateOneUp = 0;
+        public static double gateTwoUp = 0;
+        public static double gateOneDown = 0;
+        public static double gateTwoDown = 0;
         public static double cornerPosition = 100;
         public static double closePosition = 35;
         public static double cornerSpeed = 2450;
@@ -86,6 +90,9 @@ public class RobotConstants {
         public static LERP positionLERP = new LERP(0, closePosition, farDist, cornerPosition, true);
         public static LERP servoOneLERP = new LERP(0, servoOneUp, 100, servoOneDown, true);
         public static LERP servoTwoLERP = new LERP(0, servoTwoUp, 100, servoTwoDown, true);
+        public static LERP gateLERP = new LERP(0, closePosition, farDist, cornerPosition, true);
+        public static LERP gateOneLERP = new LERP(0, gateOneUp, 100, gateOneDown, true);
+        public static LERP gateTwoLERP = new LERP(0, gateTwoUp, 100, gateTwoDown, true);
 
         public static ZoneDetector redAudiencePentagon = new ZoneDetector(constructRedAudiencePentagonPoints());
         public static ZoneDetector redFarPentagon = new ZoneDetector(constructRedFarPentagonPoints());

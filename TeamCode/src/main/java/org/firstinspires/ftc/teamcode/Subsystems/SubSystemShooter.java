@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -26,6 +27,7 @@ public class SubSystemShooter {
     public SubSystemShooter(HardwareMap hwmap) {
         flywheel = hwmap.get(DcMotorEx.class, "flywheel");
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intakeMotor = hwmap.get(DcMotorEx.class, "intake");
 
@@ -109,6 +111,9 @@ public class SubSystemShooter {
 
         angleLeft.setPosition(RobotConstants.ShooterConstants.servoOneLERP.interpolated(Configurables.position));
         angleRight.setPosition(RobotConstants.ShooterConstants.servoTwoLERP.interpolated(Configurables.position));
+
+        gateLeft.setPosition(Configurables.gatePos / 100);
+        gateRight.setPosition(Configurables.gatePos2 / 100);
 
         isReady = (Math.abs(getVelocityRPM() - speed) <= 50);
     }
