@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import android.graphics.Bitmap;
-
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -91,9 +89,13 @@ public class SubSystemShooter {
     }
 
     public void gateControl(int gate, boolean up) {
-        Servo gateUsed = (gate == 1) ? gateLeft : gateRight;
+        Servo gateUsed = (gate == 0) ? gateLeft : gateRight;
 
-        gateUsed.setPosition((up) ? RobotConstants.ShooterConstants.gateMax : RobotConstants.ShooterConstants.gateMin);
+        gateUsed.setPosition(((gate == 0) ? RobotConstants.ShooterConstants.leftGateLERP.interpolated((up) ? Configurables.gatePosUp : Configurables.gatePosDown) :
+                RobotConstants.ShooterConstants.rightGateLERP.interpolated((up) ? Configurables.gatePosUp : Configurables.gatePosDown)) / 100);
+
+//        gateUsed.setPosition(((gate == 0) ? RobotConstants.ShooterConstants.leftGateLERP.interpolated((up) ? 37 : 20) :
+//                RobotConstants.ShooterConstants.rightGateLERP.interpolated((up) ? 37 : 20)) / 100);
     }
 
     public void updateFlywheel(Pose robotPose, Pose goal) {
@@ -111,9 +113,6 @@ public class SubSystemShooter {
 
         angleLeft.setPosition(RobotConstants.ShooterConstants.servoOneLERP.interpolated(Configurables.position));
         angleRight.setPosition(RobotConstants.ShooterConstants.servoTwoLERP.interpolated(Configurables.position));
-
-        gateLeft.setPosition(Configurables.gatePos / 100);
-        gateRight.setPosition(Configurables.gatePos2 / 100);
 
         isReady = (Math.abs(getVelocityRPM() - speed) <= 50);
     }

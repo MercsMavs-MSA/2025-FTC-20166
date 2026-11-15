@@ -181,6 +181,14 @@ public class DriveTestPedro extends LinearOpMode {
                 subShooter.setIntakePower(0);
             }
 
+            if (gamepad1.dpad_right) {
+                subShooter.gateControl(0, true);
+                subShooter.gateControl(1, true);
+            } else {
+                subShooter.gateControl(0, false);
+                subShooter.gateControl(1, false);
+            }
+
 //            if (pentagon1.isRobotInside(robotPose)) {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN); if (gamepad1.y) {sequenceShooting();}} else {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);}
 
             currentGoal = whichPentagon();
