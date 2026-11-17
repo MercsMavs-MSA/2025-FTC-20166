@@ -32,12 +32,8 @@ public class RobotConstants {
         public static double gateTwoDown = 57;
         public static double cornerPosition = 100;
         public static double closePosition = 35;
-        public static double cornerSpeed = 2450;
-        public static double closeSpeed = 2250;
         public static double closeVel = 2300;
         public static double cornerVel = 2500;
-        public static double closeAng = -13;
-        public static double cornerAng = 10;
         public static double farDist = 62.71;
 
         private static List<Pose> constructRedAudiencePentagonPoints() {

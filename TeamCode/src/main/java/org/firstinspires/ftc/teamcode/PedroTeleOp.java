@@ -318,7 +318,7 @@ public class PedroTeleOp extends OpMode {
                 if (robotCentric) {
                     follower.manual(forward * slowModeMultiplier, strafe * slowModeMultiplier, turn * slowModeMultiplier);
                 } else {
-                    ManualDrive.fieldCentric(forward, strafe, turn, robotPose.heading());
+                    follower.manual(ManualDrive.fieldCentric(forward, strafe, turn, robotPose.heading()));
                 }
             }
             else
@@ -326,7 +326,7 @@ public class PedroTeleOp extends OpMode {
                 if (robotCentric) {
                     follower.manual(forward * slowModeMultiplier, strafe * slowModeMultiplier, turn * slowModeMultiplier);
                 } else {
-                    ManualDrive.fieldCentric(forward, strafe, turn, robotPose.heading());
+                    follower.manual(ManualDrive.fieldCentric(forward, strafe, turn, robotPose.heading()));
                 }
             }
         }

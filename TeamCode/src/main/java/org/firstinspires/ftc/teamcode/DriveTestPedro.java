@@ -35,6 +35,7 @@ public class DriveTestPedro extends LinearOpMode {
     private ZoneDetector pentagon1;
     private Pose goalPose2;
     private ZoneDetector pentagon2;
+    private ZoneDetector currentPent;
     private Pose currentGoal;
     private Pose heldPose;
     private Follower follower = null;
@@ -87,7 +88,7 @@ public class DriveTestPedro extends LinearOpMode {
     public void initializeHardware() {
         subShooter = new SubSystemShooter(hardwareMap);
         blinkIn = new SubSystemBlinkIn(hardwareMap);
-//        subLL = new SubSystemLimelight(hardwareMap);
+        subLL = new SubSystemLimelight(hardwareMap);
         follower = Constants.create(hardwareMap);
     }
 
@@ -95,16 +96,15 @@ public class DriveTestPedro extends LinearOpMode {
         double heading = GeneralUtils.getPointsHeading(currentGoal.x(), currentGoal.y(), heldPose.x(), heldPose.y());
         follower.hold(new Pose(heldPose.x(), heldPose.y(), heading));
 
-        if (subShooter.isReady) {
+        if (subShooter.isReady && subLL.canShoot(currentPent)) {
             blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
-            subShooter.gateControl(1, true);
-            subShooter.gateControl(2, true);
         }
     }
 
     private Pose whichPentagon() {
-        if (pentagon1.isRobotInside(robotPose)) {return goalPose1;}
-        if (pentagon2.isRobotInside(robotPose)) {return goalPose2;}
+        if (pentagon1.isRobotInside(robotPose)) {currentPent = pentagon1; return goalPose1;}
+        if (pentagon2.isRobotInside(robotPose)) {currentPent = pentagon2; return goalPose2;}
+        currentPent = null;
         return null;
     }
 
