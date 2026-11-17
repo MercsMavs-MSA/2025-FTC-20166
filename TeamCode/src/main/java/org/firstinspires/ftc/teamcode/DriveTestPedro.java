@@ -39,6 +39,7 @@ public class DriveTestPedro extends LinearOpMode {
     private Pose currentGoal;
     private Pose heldPose;
     private Follower follower = null;
+    private boolean canshoot = false;
     public enum allianceColors {
         RED,
         BLUE
@@ -96,7 +97,7 @@ public class DriveTestPedro extends LinearOpMode {
         double heading = GeneralUtils.getPointsHeading(currentGoal.x(), currentGoal.y(), heldPose.x(), heldPose.y());
         follower.hold(new Pose(heldPose.x(), heldPose.y(), heading));
 
-        if (subShooter.isReady && subLL.canShoot(currentPent)) {
+        if (subShooter.isReady && canshoot) {
             blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
         }
     }
@@ -195,6 +196,8 @@ public class DriveTestPedro extends LinearOpMode {
 
             subShooter.updateFlywheel(robotPose, currentGoal);
 
+            canshoot = subLL.canShoot(currentPent);
+
             if (currentGoal != null) {
                 blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                 if (gamepad1.y) {
@@ -224,6 +227,7 @@ public class DriveTestPedro extends LinearOpMode {
 
             panelsTelemetry.update();
 
+            telemetry.addData("Can limelight see?", canshoot);
             telemetry.addData("x", robotPose.x());
             telemetry.addData("y", robotPose.y());
             telemetry.addData("heading", Math.toDegrees(robotPose.heading()));

@@ -84,8 +84,8 @@ public class RobotConstants {
         public static LERP positionLERP = new LERP(0, closePosition, farDist, cornerPosition, true);
         public static LERP servoOneLERP = new LERP(0, servoOneUp, 100, servoOneDown, true);
         public static LERP servoTwoLERP = new LERP(0, servoTwoUp, 100, servoTwoDown, true);
-        public static LERP leftGateLERP = new LERP(0, gateOneDown, 100, gateOneUp, true);
-        public static LERP rightGateLERP = new LERP(0, gateTwoDown, 100, gateTwoUp, true);
+        public static LERP leftGateLERP = new LERP(0, gateTwoDown, 100, gateTwoUp, true);
+        public static LERP rightGateLERP = new LERP(0, gateOneDown, 100, gateOneUp, true);
 
         public static ZoneDetector redAudiencePentagon = new ZoneDetector(constructRedAudiencePentagonPoints());
         public static ZoneDetector redFarPentagon = new ZoneDetector(constructRedFarPentagonPoints());
