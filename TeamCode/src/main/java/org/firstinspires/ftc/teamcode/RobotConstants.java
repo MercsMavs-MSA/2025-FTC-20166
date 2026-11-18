@@ -32,8 +32,8 @@ public class RobotConstants {
         public static double gateTwoDown = 57;
         public static double cornerPosition = 100;
         public static double closePosition = 35;
-        public static double closeVel = 2300;
-        public static double cornerVel = 2500;
+        public static double closeVel = 3067;
+        public static double cornerVel = 3333;
         public static double farDist = 62.71;
 
         private static List<Pose> constructRedAudiencePentagonPoints() {
@@ -82,8 +82,8 @@ public class RobotConstants {
 
         public static LERP velocityLERP = new LERP(0, closeVel, farDist, cornerVel, true);
         public static LERP positionLERP = new LERP(0, closePosition, farDist, cornerPosition, true);
-        public static LERP servoOneLERP = new LERP(0, servoOneUp, 100, servoOneDown, true);
-        public static LERP servoTwoLERP = new LERP(0, servoTwoUp, 100, servoTwoDown, true);
+        public static LERP servoOneLERP = new LERP(0, servoTwoUp, 100, servoTwoDown, true);
+        public static LERP servoTwoLERP = new LERP(0, servoOneUp, 100, servoOneDown, true);
         public static LERP leftGateLERP = new LERP(0, gateTwoDown, 100, gateTwoUp, true);
         public static LERP rightGateLERP = new LERP(0, gateOneDown, 100, gateOneUp, true);
 

@@ -41,9 +41,9 @@ public class TestAuto extends LinearOpMode {
                 follow(follower, path2()),
                 follow(follower, path3()),
                 follow(follower, path4()),
-                Commands.instant(() -> subShooter.setVelocityRPM(2000)),
+                Commands.instant(() -> subShooter.setBangBangRPM(2000)),
                 Commands.waitMs(5000),
-                Commands.instant(() -> subShooter.setVelocityRPM(0))
+                Commands.instant(() -> subShooter.setBangBangRPM(0))
         );
     }
 

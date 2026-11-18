@@ -54,8 +54,6 @@ public class LERP
         }
 
         //Calculating y using slope-intercept form using updated x value.
-        double result = slope * x + intercept;
-
-        return result;
+        return slope * x + intercept;
     }
 }

@@ -20,6 +20,7 @@ public class SubSystemLimelight {
 
     public boolean canShoot(ZoneDetector pentagon) {
         LLResult result = limelight.getLatestResult();
+        if (pentagon == null) {return false;}
         if (result == null) {return true;} //I would rather the robot shoot if the limelight drops out than die
         List<LLResultTypes.FiducialResult> results = result.getFiducialResults();
         List<Integer> acceptedIDS = null;

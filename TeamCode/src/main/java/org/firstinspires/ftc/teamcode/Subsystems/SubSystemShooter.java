@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Configurables;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.Utilities.GeneralUtils;
@@ -20,7 +21,10 @@ public class SubSystemShooter {
     private Servo angleLeft;
     private Servo angleRight;
     public boolean isReady = false;
+    public double targetVelocity = 0;
     public double dtg = 0;
+    public boolean enabled = true;
+    public int bangbangfactor = 0;
 
     public SubSystemShooter(HardwareMap hwmap) {
         flywheel = hwmap.get(DcMotorEx.class, "flywheel");
@@ -43,17 +47,16 @@ public class SubSystemShooter {
         angleRight = hwmap.get(Servo.class, "angleR");
     }
 
-    public void setVelocityRPM(double velocity) {
-        flywheel.setVelocity(velocity / 60 * 28);
-    }
     public void setIntakeVelocityRPM(double velocity) {intakeMotor.setVelocity(velocity / 60 * 28);}
     public void setIntakePower(double power) {intakeMotor.setPower(power);}
 
     public void setBangBangRPM(double velocity) {
-        if (getVelocityRPM() < velocity) {
+        if (getVelocityRPM() < velocity && enabled) {
             flywheel.setPower(1);
+            bangbangfactor = 4000;
         } else {
             flywheel.setPower(0);
+            bangbangfactor = 3000;
         }
     }
 
@@ -65,12 +68,12 @@ public class SubSystemShooter {
         }
     }
 
-    public void setPower(double power) {flywheel.setPower(power);}
-
     public double getVelocityRPM() {
         return flywheel.getVelocity() / 28 * 60;
     }
     public double getIntakeVelocityRPM() {return intakeMotor.getVelocity() / 28 * 60 / 5.2;}
+
+    public double getShooterCurrent() {return flywheel.getCurrent(CurrentUnit.AMPS);}
 
     public void updatePID(double p, double i, double d, double f) {
         PIDFCoefficients pidstore;
@@ -103,6 +106,8 @@ public class SubSystemShooter {
 
         double dtg = GeneralUtils.getPointsDistance(goal.x(), goal.y(), robotPose.x(), robotPose.y());
         double speed = RobotConstants.ShooterConstants.velocityLERP.interpolated(dtg);
+
+        targetVelocity = speed;
 
         this.dtg = dtg;
 

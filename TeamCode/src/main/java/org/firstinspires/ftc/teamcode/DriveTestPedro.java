@@ -22,7 +22,9 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 @TeleOp
 //@Disabled
 public class DriveTestPedro extends LinearOpMode {
-    private ElapsedTime flywheelTimer = new ElapsedTime();
+    private ElapsedTime flywheelStallAlarm = new ElapsedTime();
+    boolean stalled = false;
+    double flywheelCurrent = 0;
     private double finalTime;
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     private DrawRobot drawUtil = new DrawRobot();
@@ -95,10 +97,23 @@ public class DriveTestPedro extends LinearOpMode {
 
     public void sequenceShooting() {
         double heading = GeneralUtils.getPointsHeading(currentGoal.x(), currentGoal.y(), heldPose.x(), heldPose.y());
-        follower.hold(new Pose(heldPose.x(), heldPose.y(), heading));
+        follower.hold(new Pose(heldPose.x(), heldPose.y(), heading-180));
 
-        if (subShooter.isReady && canshoot) {
+        if (subShooter.isReady && canshoot && !stalled) {
+        }
+    }
+
+    private void updateBlinkin()
+    {
+        if (stalled)
+        {
+            blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_RED);
+        } else if (subShooter.isReady && canshoot && (currentGoal != null)) {
+            blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+        } else if (currentGoal != null) {
             blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
+        } else {
+            blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         }
     }
 
@@ -109,9 +124,24 @@ public class DriveTestPedro extends LinearOpMode {
         return null;
     }
 
+    private void monitorMotors() {
+//        if (flywheelCurrent >= 6.5 || stalled) {
+//            if (flywheelStallAlarm.seconds() > 2) {blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_RED);
+//            subShooter.stop(); stalled = true;}
+//        } else if (subShooter.getShooterCurrent() < 6.5) {
+//            flywheelStallAlarm.reset();
+//        }
+        if (flywheelCurrent < 6.5)
+        {
+            flywheelStallAlarm.reset();
+        } else
+        {
+            if (flywheelStallAlarm.seconds() > 5) {stalled = true; subShooter.enabled = false;}
+        }
+    }
+
     public void runOpMode() throws InterruptedException {
         initializeHardware();
-        flywheelTimer.reset();
         alliance = allianceColors.RED;
         robotPose = RobotConstants.PositionConstants.audienceRedStart;
         robotString = "Audience wall, facing inward (RED)";
@@ -182,7 +212,7 @@ public class DriveTestPedro extends LinearOpMode {
                 subShooter.setIntakePower(0);
             }
 
-            if (gamepad1.dpad_right) {
+            if (!gamepad1.dpad_right) {
                 subShooter.gateControl(0, true);
                 subShooter.gateControl(1, true);
             } else {
@@ -199,12 +229,9 @@ public class DriveTestPedro extends LinearOpMode {
             canshoot = subLL.canShoot(currentPent);
 
             if (currentGoal != null) {
-                blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                 if (gamepad1.y) {
                     sequenceShooting();
                 }
-            } else {
-                blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
             }
 
 //            subShooter.setBangBangRPM(Configurables.targetVelocity);
@@ -216,7 +243,8 @@ public class DriveTestPedro extends LinearOpMode {
             updatePose();
 
             panelsTelemetry.addData("flywheel velocity (rpm)", subShooter.getVelocityRPM());
-            panelsTelemetry.addData("flywheel target (rpm)", Configurables.targetVelocity);
+            panelsTelemetry.addData("flywheel speed", subShooter.targetVelocity);
+            panelsTelemetry.addData("bangbang", subShooter.bangbangfactor);
             panelsTelemetry.addData("DTG", subShooter.dtg);
             panelsTelemetry.addLine("");
             panelsTelemetry.addData("x", robotPose.x());
@@ -227,16 +255,20 @@ public class DriveTestPedro extends LinearOpMode {
 
             panelsTelemetry.update();
 
+            flywheelCurrent = subShooter.getShooterCurrent();
+
             telemetry.addData("Can limelight see?", canshoot);
+            telemetry.addData("FW Current", flywheelCurrent);
+            telemetry.addData("Flywheel target", subShooter.targetVelocity);
+            telemetry.addData("Flywheel speed", subShooter.getVelocityRPM());
             telemetry.addData("x", robotPose.x());
             telemetry.addData("y", robotPose.y());
             telemetry.addData("heading", Math.toDegrees(robotPose.heading()));
-            telemetry.addLine();
-            telemetry.addData("flywheel Velocity (rpm)", subShooter.getVelocityRPM());
-            telemetry.addData("flywheel timer (seconds)", finalTime);
-            telemetry.addData("target flywheel velocity", Configurables.targetVelocity);
 
             updateTelemetry(telemetry);
+
+            updateBlinkin();
+            monitorMotors();
         }
     }
 }
