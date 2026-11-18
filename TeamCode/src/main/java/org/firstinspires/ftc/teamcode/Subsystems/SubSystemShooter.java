@@ -25,6 +25,7 @@ public class SubSystemShooter {
     public double dtg = 0;
     public boolean enabled = true;
     public int bangbangfactor = 0;
+    public int bangbangenabled = 0;
 
     public SubSystemShooter(HardwareMap hwmap) {
         flywheel = hwmap.get(DcMotorEx.class, "flywheel");
@@ -51,6 +52,7 @@ public class SubSystemShooter {
     public void setIntakePower(double power) {intakeMotor.setPower(power);}
 
     public void setBangBangRPM(double velocity) {
+        if (bangbangenabled == 4000) {bangbangenabled = 3000;} else {bangbangenabled = 4000;}
         if (getVelocityRPM() < velocity && enabled) {
             flywheel.setPower(1);
             bangbangfactor = 4000;
