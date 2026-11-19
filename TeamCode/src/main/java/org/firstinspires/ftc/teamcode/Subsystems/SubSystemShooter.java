@@ -24,8 +24,6 @@ public class SubSystemShooter {
     public double targetVelocity = 0;
     public double dtg = 0;
     public boolean enabled = true;
-    public int bangbangfactor = 0;
-    public int bangbangenabled = 0;
 
     public SubSystemShooter(HardwareMap hwmap) {
         flywheel = hwmap.get(DcMotorEx.class, "flywheel");
@@ -52,13 +50,10 @@ public class SubSystemShooter {
     public void setIntakePower(double power) {intakeMotor.setPower(power);}
 
     public void setBangBangRPM(double velocity) {
-        if (bangbangenabled == 4000) {bangbangenabled = 3000;} else {bangbangenabled = 4000;}
         if (getVelocityRPM() < velocity && enabled) {
             flywheel.setPower(1);
-            bangbangfactor = 4000;
         } else {
             flywheel.setPower(0);
-            bangbangfactor = 3000;
         }
     }
 
@@ -104,9 +99,7 @@ public class SubSystemShooter {
     }
 
     public void updateFlywheel(Pose robotPose, Pose goal) {
-        if (goal == null) {return;}
-
-        double dtg = GeneralUtils.getPointsDistance(goal.x(), goal.y(), robotPose.x(), robotPose.y());
+        double dtg = (goal == null) ? 35 : GeneralUtils.getPointsDistance(goal.x(), goal.y(), robotPose.x(), robotPose.y());
         double speed = RobotConstants.ShooterConstants.velocityLERP.interpolated(dtg);
 
         targetVelocity = speed;
