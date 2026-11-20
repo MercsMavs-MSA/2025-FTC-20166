@@ -38,7 +38,7 @@ public class NoFlowerAuto extends LinearOpMode {
     private DriveTestPedro.allianceColors alliance;
 
     private void updateInitialSettings() {
-        alliance = (alliance == DriveTestPedro.allianceColors.RED ? DriveTestPedro.allianceColors.BLUE : DriveTestPedro.allianceColors.RED);
+        if (gamepad1.xWasPressed()) {alliance = (alliance == DriveTestPedro.allianceColors.RED ? DriveTestPedro.allianceColors.BLUE : DriveTestPedro.allianceColors.RED);}
     }
 
     // Autonomous routine
@@ -87,7 +87,6 @@ public class NoFlowerAuto extends LinearOpMode {
             telemetry.update();
         }
         blackboard.put("Pose", follower.pose());
-        blackboard.put("Auto", "NoFlower");
         blackboard.put("Alliance", alliance);
     }
 

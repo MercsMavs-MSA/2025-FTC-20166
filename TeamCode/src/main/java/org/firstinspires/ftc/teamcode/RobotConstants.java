@@ -19,8 +19,8 @@ public class RobotConstants {
         public static Pose farStart = new Pose(8.5, 134.5, 0);
         public static Pose audienceStart2 = new Pose(56.7, 10, 270);
         public static Pose farStart2 = new Pose(60.5, 132.1, 90);
-
         public static Pose parkPoint1 = new Pose(14.1, 94, 270);
+        public static Pose parkPoint2 = new Pose(13.78, 119.31, 90);
     }
 
     public static class ShooterConstants {

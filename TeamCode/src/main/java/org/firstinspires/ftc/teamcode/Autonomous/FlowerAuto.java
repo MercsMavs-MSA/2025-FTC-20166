@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Configurables;
+import org.firstinspires.ftc.teamcode.DriveTestPedro;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemShooter;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
@@ -30,9 +31,14 @@ public class FlowerAuto extends LinearOpMode {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = RobotConstants.PositionConstants.farStart2;
-    private final Pose start2 = poseFactory.of(56.7, 19, 270);
-    private final Pose park = RobotConstants.PositionConstants.parkPoint1;
-    private final Pose parkControl1 = poseFactory.of(16.2741, 30.1497, 0);
+    private final Pose start2 = poseFactory.of(60.5, 123.1, 90);
+    private final Pose park = RobotConstants.PositionConstants.parkPoint2;
+
+    private DriveTestPedro.allianceColors alliance;
+
+    private void updateInitialSettings() {
+        if (gamepad1.xWasPressed()) {alliance = (alliance == DriveTestPedro.allianceColors.RED ? DriveTestPedro.allianceColors.BLUE : DriveTestPedro.allianceColors.RED);}
+    }
 
     // Autonomous routine
     public Command autoRoutine() {
@@ -57,7 +63,10 @@ public class FlowerAuto extends LinearOpMode {
         follower.update();
         subShooter = new SubSystemShooter(hardwareMap);
 
-        waitForStart();
+        while (opModeInInit()) {
+            updateInitialSettings();
+        }
+
         schedule(autoRoutine());
 
         while (opModeIsActive()) {
@@ -76,10 +85,12 @@ public class FlowerAuto extends LinearOpMode {
 
             telemetry.update();
         }
+        blackboard.put("Pose", follower.pose());
+        blackboard.put("Alliance", alliance);
     }
 
     public Path park() {
-        return Paths.curve(start2, parkControl1, park).constant(park);
+        return Paths.line(start2, park).constant(park);
     }
     public Path park2() {
         return Paths.line(start, start2).constant(start2);

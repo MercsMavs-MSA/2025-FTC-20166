@@ -45,6 +45,8 @@ public class DriveTestPedro extends LinearOpMode {
     private double targetingError;
     private boolean tracking = false;
     private Follower follower = null;
+    private boolean posGoodFromAuto = false;
+    private boolean allGoodFromAuto = false;
     private String autoString;
 //    private boolean canshoot = false;
     public enum allianceColors {
@@ -59,7 +61,7 @@ public class DriveTestPedro extends LinearOpMode {
         robotPose = follower.pose();
     }
     private void updateInitialSettings() {
-        if (autoString == null) {
+        if (!(posGoodFromAuto && allGoodFromAuto)) {
             if (gamepad1.yWasPressed()) {
                 goalPose1 = RobotConstants.PositionConstants.audienceGoal;
                 pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
@@ -76,14 +78,6 @@ public class DriveTestPedro extends LinearOpMode {
                 robotString = "Far wall, facing inward";
             } else if (gamepad1.xWasPressed()) {
                 alliance = (alliance == allianceColors.RED ? allianceColors.BLUE : allianceColors.RED);
-            }
-        } else {
-            if (autoString.equals("NoFlower")) {
-                goalPose1 = RobotConstants.PositionConstants.audienceGoal;
-                pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
-                goalPose2 = RobotConstants.PositionConstants.farGoal;
-                pentagon2 = RobotConstants.ShooterConstants.farPentagon;
-                robotString = "From BLACKBOARD";
             }
         }
     }
@@ -113,7 +107,7 @@ public class DriveTestPedro extends LinearOpMode {
     {
         if (stalled)
         {
-            blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_RED);
+            blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
         } else if (subShooter.isReady && (currentGoal != null) && Math.abs(Math.toDegrees(robotPose.heading()) - Math.toDegrees(targetHeading)) <= 5) {
             blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         } else if (currentGoal != null) {
@@ -153,15 +147,15 @@ public class DriveTestPedro extends LinearOpMode {
         if (blackboard.get("Pose") != null) {
             robotPose = (Pose) blackboard.get("Pose");
             blackboard.remove("Pose");
+            posGoodFromAuto = true;
         }
         if (blackboard.get("Alliance") != null) {
             alliance = (allianceColors) blackboard.get("Alliance");
             blackboard.remove("Alliance");
+            allGoodFromAuto = true;
         }
-        if (blackboard.get("Auto") != null) {
-            autoString = (String) blackboard.get("Auto");
-            blackboard.remove("Auto");
-        }
+
+        if (posGoodFromAuto && allGoodFromAuto) {robotString = "PULLED_FROM_BLACKBOARD";}
 
         while(opModeInInit()) {
             updateInitialSettings();
