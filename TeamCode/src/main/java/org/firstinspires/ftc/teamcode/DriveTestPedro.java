@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.pedropathing.math.Pose;
 import com.pedropathing.follower.Follower;
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemBlinkIn;
@@ -40,8 +41,11 @@ public class DriveTestPedro extends LinearOpMode {
     private ZoneDetector pentagon2;
     private ZoneDetector currentPent;
     private Pose currentGoal;
-    private Pose heldPose;
+    private double targetHeading; // in radians
+    private double targetingError;
+    private boolean tracking = false;
     private Follower follower = null;
+    private String autoString;
 //    private boolean canshoot = false;
     public enum allianceColors {
         RED,
@@ -55,22 +59,32 @@ public class DriveTestPedro extends LinearOpMode {
         robotPose = follower.pose();
     }
     private void updateInitialSettings() {
-        if (gamepad1.yWasPressed()) {
-            goalPose1 = RobotConstants.PositionConstants.audienceGoal;
-            pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
-            goalPose2 = RobotConstants.PositionConstants.farGoal;
-            pentagon2 = RobotConstants.ShooterConstants.farPentagon;
-            robotPose = RobotConstants.PositionConstants.audienceStart;
-            robotString = "Audience wall, facing inward";
-        } else if (gamepad1.bWasPressed()) {
-            goalPose1 = RobotConstants.PositionConstants.audienceGoal;
-            pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
-            goalPose2 = RobotConstants.PositionConstants.farGoal;
-            pentagon2 = RobotConstants.ShooterConstants.farPentagon;
-            robotPose = RobotConstants.PositionConstants.farStart;
-            robotString = "Far wall, facing inward";
-        } else if (gamepad1.xWasPressed()) {
-            alliance = (alliance == allianceColors.RED ? allianceColors.BLUE : allianceColors.RED);
+        if (autoString == null) {
+            if (gamepad1.yWasPressed()) {
+                goalPose1 = RobotConstants.PositionConstants.audienceGoal;
+                pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
+                goalPose2 = RobotConstants.PositionConstants.farGoal;
+                pentagon2 = RobotConstants.ShooterConstants.farPentagon;
+                robotPose = RobotConstants.PositionConstants.audienceStart;
+                robotString = "Audience wall, facing inward";
+            } else if (gamepad1.bWasPressed()) {
+                goalPose1 = RobotConstants.PositionConstants.audienceGoal;
+                pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
+                goalPose2 = RobotConstants.PositionConstants.farGoal;
+                pentagon2 = RobotConstants.ShooterConstants.farPentagon;
+                robotPose = RobotConstants.PositionConstants.farStart;
+                robotString = "Far wall, facing inward";
+            } else if (gamepad1.xWasPressed()) {
+                alliance = (alliance == allianceColors.RED ? allianceColors.BLUE : allianceColors.RED);
+            }
+        } else {
+            if (autoString.equals("NoFlower")) {
+                goalPose1 = RobotConstants.PositionConstants.audienceGoal;
+                pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
+                goalPose2 = RobotConstants.PositionConstants.farGoal;
+                pentagon2 = RobotConstants.ShooterConstants.farPentagon;
+                robotString = "From BLACKBOARD";
+            }
         }
     }
     public void initializeHardware() {
@@ -81,19 +95,16 @@ public class DriveTestPedro extends LinearOpMode {
     }
 
     public void sequenceShooting() {
-        double heading = GeneralUtils.getPointsHeading(currentGoal.x(), currentGoal.y(), heldPose.x(), heldPose.y());
-        follower.hold(new Pose(heldPose.x(), heldPose.y(), heading-180));
-
-        if (gamepad1.yWasPressed()) {
+        if (gamepad2.yWasPressed()) {
             intakeshootergate.reset();
         }
 
-        if (subShooter.isReady && !stalled) {
+        if (subShooter.isReady && !stalled && targetingError <= 5) {
             subShooter.gateControl(0, false);
             subShooter.gateControl(1, false);
 
             if (intakeshootergate.milliseconds() >= RobotConstants.ShooterConstants.intakeWait) {
-                subShooter.setIntakePower(Configurables.intakePower);
+                subShooter.setIntakePower(Configurables.shootingIntakePower);
             }
         }
     }
@@ -103,7 +114,7 @@ public class DriveTestPedro extends LinearOpMode {
         if (stalled)
         {
             blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_RED);
-        } else if (subShooter.isReady && (currentGoal != null)) {
+        } else if (subShooter.isReady && (currentGoal != null) && Math.abs(Math.toDegrees(robotPose.heading()) - Math.toDegrees(targetHeading)) <= 5) {
             blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         } else if (currentGoal != null) {
             blinkIn.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
@@ -133,11 +144,24 @@ public class DriveTestPedro extends LinearOpMode {
         initializeHardware();
         alliance = allianceColors.RED;
         robotPose = RobotConstants.PositionConstants.audienceStart;
-        robotString = "Audience wall, facing inward (RED)";
+        robotString = "Audience wall, facing inward";
         goalPose1 = RobotConstants.PositionConstants.audienceGoal;
         pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
         goalPose2 = RobotConstants.PositionConstants.farGoal;
         pentagon2 = RobotConstants.ShooterConstants.farPentagon;
+
+        if (blackboard.get("Pose") != null) {
+            robotPose = (Pose) blackboard.get("Pose");
+            blackboard.remove("Pose");
+        }
+        if (blackboard.get("Alliance") != null) {
+            alliance = (allianceColors) blackboard.get("Alliance");
+            blackboard.remove("Alliance");
+        }
+        if (blackboard.get("Auto") != null) {
+            autoString = (String) blackboard.get("Auto");
+            blackboard.remove("Auto");
+        }
 
         while(opModeInInit()) {
             updateInitialSettings();
@@ -155,80 +179,45 @@ public class DriveTestPedro extends LinearOpMode {
 
         while (opModeIsActive())
         {
-//            if (!gamepad1.y) {
-//                if (gamepad1.right_bumper) {
-//                    follower.manual(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
-//                } else {
-//                    if (alliance == allianceColors.RED) {
-//                        follower.manual(
-//                                ManualDrive.fieldCentric(
-//                                        -gamepad1.left_stick_y,
-//                                        -gamepad1.left_stick_x,
-//                                        -gamepad1.right_stick_x,
-//                                        robotPose.heading()
-//                                )
-//                        );
-//                    } else if (alliance == allianceColors.BLUE) {
-//                        follower.manual(
-//                                ManualDrive.fieldCentric(
-//                                        gamepad1.left_stick_y,
-//                                        gamepad1.left_stick_x,
-//                                        -gamepad1.right_stick_x,
-//                                        robotPose.heading()
-//                                )
-//                        );
-//                    }
-//                }
-//
-//                heldPose = robotPose;
-//            }
-            if (!gamepad1.y) {
-                if (gamepad1.right_bumper) {
-                    follower.manual(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
-                } else {
-                    follower.manual(
-                            ManualDrive.fieldCentric(
-                                    -gamepad1.left_stick_y,
-                                    -gamepad1.left_stick_x,
-                                    -gamepad1.right_stick_x,
-                                    robotPose.heading()
-                            )
-                    );
+            updatePose();
+            tracking = false;
 
-                    heldPose = robotPose;
-                }
-            }
-
-            if (gamepad1.left_bumper) {
-                follower.hold(new Pose(70.75, 70.75, Math.toRadians(90)));
-            }
-
-            if (!gamepad1.y) {
-                if (gamepad1.dpad_up) {
+            if (!gamepad2.y) {
+                if (gamepad2.dpad_up) {
                     subShooter.setIntakePower(Configurables.intakePower);
-                } else if (gamepad1.dpad_down) {
+                } else if (gamepad2.dpad_down) {
                     subShooter.setIntakePower(-Configurables.intakePower);
                 } else {
                     subShooter.setIntakePower(0);
                 }
-            } else if (gamepad1.y && (gamepad1.dpad_down || gamepad1.dpad_up)) {
+            } else if (gamepad2.y && (gamepad2.dpad_down || gamepad2.dpad_up)) {
                 subShooter.setIntakePower(0);
             }
 
             currentGoal = whichPentagon();
 
+            if (currentGoal != null) {
+                targetHeading = GeneralUtils.getPointsHeading(currentGoal.x(), currentGoal.y(), robotPose.x(), robotPose.y()) - Math.PI;
+            }
+
+            targetingError = (Math.toDegrees(targetHeading) - Math.toDegrees(robotPose.heading()));
+            targetingError = GeneralUtils.wrapRange(targetingError, 180);
+
             subShooter.updateFlywheel(robotPose, currentGoal);
 
 //            canshoot = subLL.canShoot(currentPent, alliance);
 
-            if (currentGoal != null && gamepad1.y) {
+            if (currentGoal != null && gamepad2.y) {
+                tracking = true;
                 sequenceShooting();
             } else {
                 subShooter.gateControl(0, true);
                 subShooter.gateControl(1, true);
             }
 
-            updatePose();
+            if (gamepad2.b) {
+                tracking = true;
+            }
 
             panelsTelemetry.addData("flywheel velocity (rpm)", subShooter.getVelocityRPM());
             panelsTelemetry.addData("flywheel speed", subShooter.targetVelocity);
@@ -245,6 +234,10 @@ public class DriveTestPedro extends LinearOpMode {
             flywheelCurrent = subShooter.getShooterCurrent();
 
 //            telemetry.addData("LL IDS", subLL.listThem());
+            telemetry.addData("Robot Heading", Math.toDegrees(robotPose.heading()));
+            telemetry.addData("Target Heading", Math.toDegrees(targetHeading));
+            telemetry.addData("Target error", targetingError);
+            telemetry.addData("Tracking", tracking);
             telemetry.addData("In Trapezoid", (currentPent != null ? "Yes" : "No"));
             telemetry.addData("Flywheel to speed?", (subShooter.isReady ? "Yes" : "No"));
             telemetry.addData("FW Current", flywheelCurrent);
@@ -258,6 +251,21 @@ public class DriveTestPedro extends LinearOpMode {
 
             updateBlinkin();
             monitorMotors();
+
+            if (!gamepad1.y) {
+                if (gamepad1.right_bumper) {
+                    follower.manual(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+                } else {
+                    follower.manual(
+                            ManualDrive.fieldCentric(
+                                    -gamepad1.left_stick_y,
+                                    -gamepad1.left_stick_x,
+                                    (tracking ? targetingError * Configurables.targetingP : -gamepad1.right_stick_x),
+                                    robotPose.heading()
+                            )
+                    );
+                }
+            }
         }
     }
 }

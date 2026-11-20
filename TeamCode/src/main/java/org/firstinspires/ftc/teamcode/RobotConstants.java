@@ -10,11 +10,17 @@ import java.util.List;
 
 public class RobotConstants {
     public static class PositionConstants {
-        public static Pose audienceGoal = new Pose(58, 50, 90);
-        public static Pose farGoal = new Pose(58, 94, 270);
+//        public static Pose audienceGoal = new Pose(58, 50, 90);
+//        public static Pose farGoal = new Pose(58, 94, 270);
+        public static Pose audienceGoal = new Pose(59, 51.3, 90);
+        public static Pose farGoal = new Pose(59, 86.3, 270);
 
         public static Pose audienceStart = new Pose(8.5,9.5, 0);
         public static Pose farStart = new Pose(8.5, 134.5, 0);
+        public static Pose audienceStart2 = new Pose(56.7, 10, 270);
+        public static Pose farStart2 = new Pose(60.5, 132.1, 90);
+
+        public static Pose parkPoint1 = new Pose(14.1, 94, 270);
     }
 
     public static class ShooterConstants {
@@ -27,7 +33,7 @@ public class RobotConstants {
         public static double gateOneDown = 52.5;
         public static double gateTwoDown = 57;
         public static double cornerPosition = 100;
-        public static double closePosition = 35;
+        public static double closePosition = 50;
         public static double closeVel = 3067;
         public static double cornerVel = 3333;
         public static double farDist = 62.71;

@@ -9,4 +9,6 @@ public class Configurables {
     public static double gatePosDown = 8;
     public static double targetVelocity = 0;
     public static double intakePower = 1;
+    public static double shootingIntakePower = 0.5;
+    public static double targetingP = 0.02;
 }
