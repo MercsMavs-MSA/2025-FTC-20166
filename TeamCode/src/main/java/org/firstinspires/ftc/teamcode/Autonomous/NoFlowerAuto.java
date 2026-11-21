@@ -31,11 +31,11 @@ public class NoFlowerAuto extends LinearOpMode {
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = RobotConstants.PositionConstants.audienceStart2;
-    private final Pose start2 = poseFactory.of(56.7, 19, 270);
-    private final Pose park = RobotConstants.PositionConstants.parkPoint1;
+    private final Pose start = RobotConstants.PositionConstants.noFlowerStart;
+    private final Pose start2 = poseFactory.of(58.5, 19, 270);
+    private final Pose park = RobotConstants.PositionConstants.noFlowerPark;
     private final Pose parkControl1 = poseFactory.of(16.2741, 30.1497, 0);
-    private DriveTestPedro.allianceColors alliance;
+    private DriveTestPedro.allianceColors alliance = DriveTestPedro.allianceColors.RED;
 
     private void updateInitialSettings() {
         if (gamepad1.xWasPressed()) {alliance = (alliance == DriveTestPedro.allianceColors.RED ? DriveTestPedro.allianceColors.BLUE : DriveTestPedro.allianceColors.RED);}
@@ -45,7 +45,7 @@ public class NoFlowerAuto extends LinearOpMode {
     public Command autoRoutine() {
         return sequential(
                 follow(follower, park2()),
-                Commands.waitUntil(() -> subShooter.isReady),
+//                Commands.waitUntil(() -> subShooter.isReady),
                 Commands.instant(() -> subShooter.gateControl(0, false)),
                 Commands.instant(() -> subShooter.gateControl(1, false)),
                 Commands.waitMs(RobotConstants.ShooterConstants.intakeWait),
@@ -66,13 +66,15 @@ public class NoFlowerAuto extends LinearOpMode {
 
         while (opModeInInit()) {
             updateInitialSettings();
+            telemetry.addData("Alliance", alliance);
+            telemetry.update();
         }
 
         schedule(autoRoutine());
 
         while (opModeIsActive()) {
             follower.update();
-            subShooter.updateFlywheel(follower.pose(), RobotConstants.PositionConstants.audienceGoal);
+            subShooter.updateFlywheel(follower.pose(), RobotConstants.PositionConstants.noFlowerGoal);
             Scheduler.execute();
 
             telemetry.addData("x", follower.pose().x());

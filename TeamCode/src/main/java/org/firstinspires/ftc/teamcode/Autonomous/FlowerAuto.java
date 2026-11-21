@@ -30,11 +30,11 @@ public class FlowerAuto extends LinearOpMode {
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = RobotConstants.PositionConstants.farStart2;
-    private final Pose start2 = poseFactory.of(60.5, 123.1, 90);
-    private final Pose park = RobotConstants.PositionConstants.parkPoint2;
+    private final Pose start = RobotConstants.PositionConstants.flowerStart;
+    private final Pose start2 = poseFactory.of(60.5, 126.1, 90);
+    private final Pose park = RobotConstants.PositionConstants.flowerPark;
 
-    private DriveTestPedro.allianceColors alliance;
+    private DriveTestPedro.allianceColors alliance = DriveTestPedro.allianceColors.RED;
 
     private void updateInitialSettings() {
         if (gamepad1.xWasPressed()) {alliance = (alliance == DriveTestPedro.allianceColors.RED ? DriveTestPedro.allianceColors.BLUE : DriveTestPedro.allianceColors.RED);}
@@ -44,7 +44,7 @@ public class FlowerAuto extends LinearOpMode {
     public Command autoRoutine() {
         return sequential(
                 follow(follower, park2()),
-                Commands.waitUntil(() -> subShooter.isReady),
+//                Commands.waitUntil(() -> subShooter.isReady),
                 Commands.instant(() -> subShooter.gateControl(0, false)),
                 Commands.instant(() -> subShooter.gateControl(1, false)),
                 Commands.waitMs(RobotConstants.ShooterConstants.intakeWait),
@@ -65,13 +65,15 @@ public class FlowerAuto extends LinearOpMode {
 
         while (opModeInInit()) {
             updateInitialSettings();
+            telemetry.addData("Alliance", alliance);
+            telemetry.update();
         }
 
         schedule(autoRoutine());
 
         while (opModeIsActive()) {
             follower.update();
-            subShooter.updateFlywheel(follower.pose(), RobotConstants.PositionConstants.audienceGoal);
+            subShooter.updateFlywheel(follower.pose(), RobotConstants.PositionConstants.flowerGoal);
             Scheduler.execute();
 
             telemetry.addData("x", follower.pose().x());

@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.pedropathing.math.Pose;
 import com.pedropathing.follower.Follower;
-import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Subsystems.SubSystemBlinkIn;
@@ -27,7 +26,6 @@ public class DriveTestPedro extends LinearOpMode {
     private ElapsedTime intakeshootergate = new ElapsedTime();
     boolean stalled = false;
     double flywheelCurrent = 0;
-    private double finalTime;
     private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     private DrawRobot drawUtil = new DrawRobot();
     private SubSystemShooter subShooter;
@@ -63,19 +61,19 @@ public class DriveTestPedro extends LinearOpMode {
     private void updateInitialSettings() {
         if (!(posGoodFromAuto && allGoodFromAuto)) {
             if (gamepad1.yWasPressed()) {
-                goalPose1 = RobotConstants.PositionConstants.audienceGoal;
-                pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
-                goalPose2 = RobotConstants.PositionConstants.farGoal;
-                pentagon2 = RobotConstants.ShooterConstants.farPentagon;
-                robotPose = RobotConstants.PositionConstants.audienceStart;
-                robotString = "Audience wall, facing inward";
+                goalPose1 = RobotConstants.PositionConstants.flowerGoal;
+                pentagon1 = RobotConstants.ShooterConstants.flowerPentagon;
+                goalPose2 = RobotConstants.PositionConstants.noFlowerGoal;
+                pentagon2 = RobotConstants.ShooterConstants.noFlowerPentagon;
+                robotPose = RobotConstants.PositionConstants.flowerStart;
+                robotString = "Against flower, tiny gap, Far";
             } else if (gamepad1.bWasPressed()) {
-                goalPose1 = RobotConstants.PositionConstants.audienceGoal;
-                pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
-                goalPose2 = RobotConstants.PositionConstants.farGoal;
-                pentagon2 = RobotConstants.ShooterConstants.farPentagon;
-                robotPose = RobotConstants.PositionConstants.farStart;
-                robotString = "Far wall, facing inward";
+                goalPose1 = RobotConstants.PositionConstants.flowerGoal;
+                pentagon1 = RobotConstants.ShooterConstants.flowerPentagon;
+                goalPose2 = RobotConstants.PositionConstants.noFlowerGoal;
+                pentagon2 = RobotConstants.ShooterConstants.noFlowerPentagon;
+                robotPose = RobotConstants.PositionConstants.noFlowerStart;
+                robotString = "Audience, against tile teeth";
             } else if (gamepad1.xWasPressed()) {
                 alliance = (alliance == allianceColors.RED ? allianceColors.BLUE : allianceColors.RED);
             }
@@ -118,8 +116,8 @@ public class DriveTestPedro extends LinearOpMode {
     }
 
     private Pose whichPentagon() {
-        if (pentagon1.isRobotInside(robotPose)) {currentPent = pentagon1; return goalPose1;}
-        if (pentagon2.isRobotInside(robotPose)) {currentPent = pentagon2; return goalPose2;}
+        if (pentagon1.isRobotInside(robotPose)) {currentPent = pentagon1; return goalPose2;}
+        if (pentagon2.isRobotInside(robotPose)) {currentPent = pentagon2; return goalPose1;}
         currentPent = null;
         return null;
     }
@@ -137,12 +135,12 @@ public class DriveTestPedro extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         initializeHardware();
         alliance = allianceColors.RED;
-        robotPose = RobotConstants.PositionConstants.audienceStart;
-        robotString = "Audience wall, facing inward";
-        goalPose1 = RobotConstants.PositionConstants.audienceGoal;
-        pentagon1 = RobotConstants.ShooterConstants.audiencePentagon;
-        goalPose2 = RobotConstants.PositionConstants.farGoal;
-        pentagon2 = RobotConstants.ShooterConstants.farPentagon;
+        robotPose = RobotConstants.PositionConstants.flowerStart;
+        robotString = "Against flower, tiny gap, Far";
+        goalPose1 = RobotConstants.PositionConstants.flowerGoal;
+        pentagon1 = RobotConstants.ShooterConstants.noFlowerPentagon;
+        goalPose2 = RobotConstants.PositionConstants.noFlowerGoal   ;
+        pentagon2 = RobotConstants.ShooterConstants.flowerPentagon;
 
         if (blackboard.get("Pose") != null) {
             robotPose = (Pose) blackboard.get("Pose");
@@ -164,6 +162,8 @@ public class DriveTestPedro extends LinearOpMode {
 
             flywheelStallAlarm.reset();
             intakeshootergate.reset();
+
+            subShooter.setFlowerArm(true);
 
             telemetry.addData("Alliance", alliance.toString());
             telemetry.addData("Starting position", robotString);
@@ -213,6 +213,8 @@ public class DriveTestPedro extends LinearOpMode {
                 tracking = true;
             }
 
+            subShooter.setFlowerArm(!gamepad2.a);
+
             panelsTelemetry.addData("flywheel velocity (rpm)", subShooter.getVelocityRPM());
             panelsTelemetry.addData("flywheel speed", subShooter.targetVelocity);
             panelsTelemetry.addData("DTG", subShooter.dtg);
@@ -221,7 +223,7 @@ public class DriveTestPedro extends LinearOpMode {
             panelsTelemetry.addData("y", robotPose.y());
             panelsTelemetry.addData("heading", Math.toDegrees(robotPose.heading()));
 
-            drawUtil.drawRobot(robotPose.x(), robotPose.y(), robotPose.heading());
+            drawUtil.drawRobot(robotPose.x(), robotPose.y(), robotPose.heading(), goalPose1, goalPose2);
 
             panelsTelemetry.update();
 
@@ -231,6 +233,7 @@ public class DriveTestPedro extends LinearOpMode {
             telemetry.addData("Robot Heading", Math.toDegrees(robotPose.heading()));
             telemetry.addData("Target Heading", Math.toDegrees(targetHeading));
             telemetry.addData("Target error", targetingError);
+            telemetry.addData("DTG", subShooter.dtg);
             telemetry.addData("Tracking", tracking);
             telemetry.addData("In Trapezoid", (currentPent != null ? "Yes" : "No"));
             telemetry.addData("Flywheel to speed?", (subShooter.isReady ? "Yes" : "No"));

@@ -17,20 +17,21 @@ public class SubSystemLimelight {
     public SubSystemLimelight(HardwareMap hwmap) {
         limelight = hwmap.get(Limelight3A.class, "lime");
         limelight.pipelineSwitch(0);
+        limelight.start();
     }
 
     public boolean canShoot(ZoneDetector pentagon, DriveTestPedro.allianceColors alliance) {
         LLResult result = limelight.getLatestResult();
         if (pentagon == null) {return false;}
-        if (result == null) {return true;} //I would rather the robot shoot if the limelight drops out than die
+        if (result == null || !result.isValid()) {return true;} //I would rather the robot shoot if the limelight drops out than die
         List<LLResultTypes.FiducialResult> results = result.getFiducialResults();
         List<Integer> acceptedIDS = null;
         boolean detected = false;
 
-        if (pentagon.equals(RobotConstants.ShooterConstants.audiencePentagon) && alliance == DriveTestPedro.allianceColors.RED) {acceptedIDS = List.of(34, 35, 36, 37);}
-        else if (pentagon.equals(RobotConstants.ShooterConstants.farPentagon) && alliance == DriveTestPedro.allianceColors.RED) {acceptedIDS = List.of(30, 31, 32, 33);}
-        else if (pentagon.equals(RobotConstants.ShooterConstants.audiencePentagon) && alliance == DriveTestPedro.allianceColors.BLUE) {acceptedIDS = List.of(38, 39, 40, 41);}
-        else if (pentagon.equals(RobotConstants.ShooterConstants.farPentagon) && alliance == DriveTestPedro.allianceColors.BLUE) {acceptedIDS = List.of(42, 43, 44, 45);}
+        if (pentagon.equals(RobotConstants.ShooterConstants.noFlowerPentagon) && alliance == DriveTestPedro.allianceColors.RED) {acceptedIDS = List.of(34, 35, 36, 37);}
+        else if (pentagon.equals(RobotConstants.ShooterConstants.flowerPentagon) && alliance == DriveTestPedro.allianceColors.RED) {acceptedIDS = List.of(30, 31, 32, 33);}
+        else if (pentagon.equals(RobotConstants.ShooterConstants.noFlowerPentagon) && alliance == DriveTestPedro.allianceColors.BLUE) {acceptedIDS = List.of(38, 39, 40, 41);}
+        else if (pentagon.equals(RobotConstants.ShooterConstants.flowerPentagon) && alliance == DriveTestPedro.allianceColors.BLUE) {acceptedIDS = List.of(42, 43, 44, 45);}
 
         if (acceptedIDS == null) {return false;}
 
@@ -42,20 +43,5 @@ public class SubSystemLimelight {
         }
 
         return detected;
-    }
-
-    public List<LLResultTypes.FiducialResult> listThem() {
-        LLResult result = limelight.getLatestResult();
-        if (result == null) {return List.of();} //I would rather the robot shoot if the limelight drops out than die
-        List<LLResultTypes.FiducialResult> results = result.getFiducialResults();
-        return results;
-
-//        String ids = "";
-//
-//        for(LLResultTypes.FiducialResult fid : results) {
-//            ids = ids.concat(String.valueOf(fid.getFiducialId()).concat(", "));
-//        }
-//
-//        return ids;
     }
 }

@@ -20,6 +20,8 @@ public class SubSystemShooter {
     private Servo gateRight;
     private Servo angleLeft;
     private Servo angleRight;
+    private Servo armLeft;
+    private Servo armRight;
     public boolean isReady = false;
     public double targetVelocity = 0;
     public double dtg = 0;
@@ -44,10 +46,19 @@ public class SubSystemShooter {
         gateRight = hwmap.get(Servo.class, "gateR");
         angleLeft = hwmap.get(Servo.class, "angleL");
         angleRight = hwmap.get(Servo.class, "angleR");
+        armLeft = hwmap.get(Servo.class, "armL");
+        armRight = hwmap.get(Servo.class, "armR");
     }
 
     public void setIntakeVelocityRPM(double velocity) {intakeMotor.setVelocity(velocity / 60 * 28);}
     public void setIntakePower(double power) {intakeMotor.setPower(power);}
+
+    public void setFlowerArm(boolean up) {
+        armLeft.setPosition(up ? RobotConstants.ShooterConstants.flowerArmLeftUp : RobotConstants.ShooterConstants.flowerArmLeftDown);
+        armRight.setPosition(up ? RobotConstants.ShooterConstants.flowerArmRightUp : RobotConstants.ShooterConstants.flowerArmRightDown);
+//        armLeft.setPosition(up ? Configurables.flowerArmLeftUp : Configurables.flowerArmLeftDown);
+//        armRight.setPosition(up ? Configurables.flowerArmRightUp : Configurables.flowerArmRightDown);
+    }
 
     public void setBangBangRPM(double velocity) {
         if (getVelocityRPM() < velocity && enabled) {

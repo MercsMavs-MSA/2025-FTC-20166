@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.api.PoseFactory;
 import com.pedropathing.math.Pose;
 
 import org.firstinspires.ftc.teamcode.Utilities.LERP;
@@ -9,18 +10,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RobotConstants {
+
     public static class PositionConstants {
+        private static final PoseFactory factory = PoseFactory.degrees();
+
 //        public static Pose audienceGoal = new Pose(58, 50, 90);
 //        public static Pose farGoal = new Pose(58, 94, 270);
-        public static Pose audienceGoal = new Pose(59, 51.3, 90);
-        public static Pose farGoal = new Pose(59, 86.3, 270);
-
-        public static Pose audienceStart = new Pose(8.5,9.5, 0);
-        public static Pose farStart = new Pose(8.5, 134.5, 0);
-        public static Pose audienceStart2 = new Pose(56.7, 10, 270);
-        public static Pose farStart2 = new Pose(60.5, 132.1, 90);
-        public static Pose parkPoint1 = new Pose(14.1, 94, 270);
-        public static Pose parkPoint2 = new Pose(13.78, 119.31, 90);
+//        public static Pose audienceGoal = factory.of(57.8, 54, 90);
+        public static Pose flowerGoal = factory.of(58.45, 92.2, 90);
+        public static Pose noFlowerGoal = factory.of(58.45, 53.3, 90);
+//        public static Pose farGoal = factory.of(52.8, 91.8, 270);
+        public static Pose audienceStart = factory.of(8.5,9.5, 0);
+        public static Pose farStart = factory.of(8.5, 134.5, 0);
+        public static Pose noFlowerStart = factory.of(58.5, 10, 270);
+        public static Pose flowerStart = factory.of(60.5, 135.1, 90);
+        public static Pose noFlowerPark = factory.of(12.8, 92.8, 270);
+        public static Pose flowerPark = factory.of(13.3, 121.2, 90);
     }
 
     public static class ShooterConstants {
@@ -37,6 +42,11 @@ public class RobotConstants {
         public static double closeVel = 3067;
         public static double cornerVel = 3333;
         public static double farDist = 62.71;
+
+        public static double flowerArmRightUp = 0.66;
+        public static double flowerArmRightDown = 0.16;
+        public static double flowerArmLeftUp = 0.4;
+        public static double flowerArmLeftDown = 0.9;
 
         public static double intakeWait = 400; // In milliseconds
 
@@ -69,7 +79,7 @@ public class RobotConstants {
         public static LERP leftGateLERP = new LERP(0, gateTwoDown, 100, gateTwoUp, true);
         public static LERP rightGateLERP = new LERP(0, gateOneDown, 100, gateOneUp, true);
 
-        public static ZoneDetector audiencePentagon = new ZoneDetector(constructRedAudiencePentagonPoints());
-        public static ZoneDetector farPentagon = new ZoneDetector(constructRedFarPentagonPoints());
+        public static ZoneDetector noFlowerPentagon = new ZoneDetector(constructRedAudiencePentagonPoints());
+        public static ZoneDetector flowerPentagon = new ZoneDetector(constructRedFarPentagonPoints());
     }
 }
